@@ -5,6 +5,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .container {
@@ -20,10 +21,20 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.logo:hover {
+  transform: scale(1.02);
 }
 
 .logoIcon {
   font-size: 1.75rem;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.logo:hover .logoIcon {
+  transform: rotate(-5deg) scale(1.1);
 }
 
 .logoText {
@@ -50,6 +61,12 @@
 .avatar {
   border-radius: 50%;
   border: 2px solid rgba(167, 139, 250, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.avatar:hover {
+  border-color: rgba(167, 139, 250, 0.8);
+  transform: scale(1.05);
 }
 
 .userName {
@@ -67,13 +84,18 @@
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .profileBtn:hover {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.profileBtn:active {
+  transform: translateY(0);
 }
 
 
@@ -86,13 +108,18 @@
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .signOutBtn:hover {
   background: rgba(239, 68, 68, 0.25);
   border-color: rgba(239, 68, 68, 0.5);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.signOutBtn:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 640px) {
@@ -123,10 +150,30 @@
   font-size: 0.95rem;
   cursor: pointer;
   opacity: 0.8;
-  transition: opacity 0.2s;
-  padding: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  position: relative;
+}
+
+.navBtn::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #a78bfa, #818cf8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+  border-radius: 2px;
 }
 
 .navBtn:hover {
   opacity: 1;
+  background: rgba(167, 139, 250, 0.1);
+}
+
+.navBtn:hover::after {
+  width: 80%;
 }

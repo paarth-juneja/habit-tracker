@@ -3,7 +3,10 @@
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 16px;
     padding: 1.5rem;
-    transition: all 0.3s ease;
+    transition:
+        transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
@@ -17,12 +20,19 @@
     height: 3px;
     background: var(--accent-color);
     border-radius: 16px 16px 0 0;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow:
+        0 16px 48px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(167, 139, 250, 0.1);
+}
+
+.card:hover::before {
+    height: 4px;
 }
 
 .header {
