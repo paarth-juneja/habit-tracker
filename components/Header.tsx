@@ -43,6 +43,12 @@ export default function Header() {
                             <span className={styles.userName}>{user.displayName}</span>
                         </div>
                         <button
+                            onClick={() => router.push('/profile')}
+                            className={styles.profileBtn}
+                        >
+                            Profile
+                        </button>
+                        <button
                             onClick={handleSignOut}
                             className={styles.signOutBtn}
                         >

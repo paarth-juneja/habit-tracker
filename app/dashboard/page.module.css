@@ -39,11 +39,32 @@
     margin: 0 auto;
 }
 
+.headerSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.welcomeTitle {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.welcomeName {
+    font-weight: 700;
+    background: linear-gradient(135deg, #a78bfa, #818cf8);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #a78bfa;
+}
+
 .statusBar {
     display: flex;
     justify-content: flex-end;
     min-height: 24px;
-    margin-bottom: 1rem;
 }
 
 .savingIndicator {

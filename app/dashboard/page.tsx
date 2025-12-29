@@ -47,6 +47,31 @@ export default function DashboardPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
+    const [userName, setUserName] = useState<string>('');
+
+    // Fetch user profile for name
+    useEffect(() => {
+        const fetchProfileName = async () => {
+            if (!user) return;
+            try {
+                const docRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().profile?.firstName) {
+                    setUserName(docSnap.data().profile.firstName);
+                } else {
+                    setUserName(user.displayName?.split(' ')[0] || 'User');
+                }
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+                setUserName(user.displayName?.split(' ')[0] || 'User');
+            }
+        };
+
+        if (user) {
+            fetchProfileName();
+        }
+    }, [user]);
+
     // Redirect if not authenticated
     useEffect(() => {
         if (!loading && !user) {
@@ -158,19 +183,24 @@ export default function DashboardPage() {
             <Header />
             <main className={styles.main}>
                 <div className={styles.container}>
-                    {/* Status Bar */}
-                    <div className={styles.statusBar}>
-                        {isSaving && (
-                            <span className={styles.savingIndicator}>
-                                <span className={styles.savingDot}></span>
-                                Saving...
-                            </span>
-                        )}
-                        {!isSaving && lastSaved && (
-                            <span className={styles.savedIndicator}>
-                                ✓ Saved
-                            </span>
-                        )}
+                    {/* Welcome & Status Bar */}
+                    <div className={styles.headerSection}>
+                        <h1 className={styles.welcomeTitle}>
+                            Welcome, <span className={styles.welcomeName}>{userName}</span>
+                        </h1>
+                        <div className={styles.statusBar}>
+                            {isSaving && (
+                                <span className={styles.savingIndicator}>
+                                    <span className={styles.savingDot}></span>
+                                    Saving...
+                                </span>
+                            )}
+                            {!isSaving && lastSaved && (
+                                <span className={styles.savedIndicator}>
+                                    ✓ Saved
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     {/* Goals Section */}
