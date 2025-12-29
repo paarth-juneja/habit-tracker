@@ -11,9 +11,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-    title: 'Habit Tracker - Track Your Goals & Daily Habits',
+    title: 'Everform - Track Your Goals & Daily Habits',
     description: 'A comprehensive habit tracking app to set goals, track daily habits, and achieve your dreams. From 10-year visions to weekly tasks.',
     keywords: ['habit tracker', 'goal setting', 'productivity', 'daily habits', 'self improvement'],
+    icons: {
+        icon: '/favicon-white-circle.png',
+        apple: '/favicon-white-circle.png',
+    },
 };
 
 export default function RootLayout({

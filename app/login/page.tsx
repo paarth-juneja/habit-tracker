@@ -8,6 +8,9 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { clearAuthCache } from '@/lib/cacheManager';
 
+import Link from 'next/link';
+import Image from 'next/image';
+
 export default function LoginPage() {
     const { user, loading } = useAuth();
     const router = useRouter();
@@ -49,8 +52,14 @@ export default function LoginPage() {
         <div className={styles.container}>
             <div className={styles.card}>
                 <div className={styles.logo}>
-                    <span className={styles.logoIcon}>🎯</span>
-                    <span className={styles.logoText}>Habit Tracker</span>
+                    <Image
+                        src="/everform-logo.png"
+                        alt="Everform Logo"
+                        width={48}
+                        height={48}
+                        className={styles.logoImage}
+                    />
+                    <span className={styles.logoText}>Everform</span>
                 </div>
 
                 <h1 className={styles.title}>Welcome Back</h1>

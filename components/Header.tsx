@@ -18,8 +18,14 @@ export default function Header() {
         <header className={styles.header}>
             <div className={styles.container}>
                 <div className={styles.logo}>
-                    <span className={styles.logoIcon}>🎯</span>
-                    <span className={styles.logoText}>Habit Tracker</span>
+                    <Image
+                        src="/everform-logo.png"
+                        alt="Everform Logo"
+                        width={32}
+                        height={32}
+                        className={styles.logoImage}
+                    />
+                    <span className={styles.logoText}>Everform</span>
                 </div>
 
                 {user && (
