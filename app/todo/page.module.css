@@ -88,3 +88,64 @@
         flex-direction: column;
     }
 }
+
+.dragOverlayItem {
+    background: #2a2a40;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #4a90e2;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    cursor: grabbing;
+    width: auto;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dragOverlayText {
+    font-size: 1rem;
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.modalMessage {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.modalBtn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.modalBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modalBtnPrimary {
+    background: #4a90e2;
+    border-color: #4a90e2;
+}
+
+.modalBtnPrimary:hover {
+    background: #357abd;
+    border-color: #357abd;
+}
