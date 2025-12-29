@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import Header from '@/components/Header';
 import GoalGrid from '@/components/GoalGrid';
+import LongTermGoalsDropdown from '@/components/LongTermGoalsDropdown';
 import HabitTracker from '@/components/HabitTracker';
 import styles from './page.module.css';
 import { useAuth } from '@/components/AuthProvider';
@@ -15,7 +16,6 @@ interface Goals {
     fiveYear: string;
     oneYear: string;
     sixMonth: string;
-    fourMonth: string;
     oneMonth: string;
     weekly: string;
 }
@@ -31,7 +31,6 @@ const defaultGoals: Goals = {
     fiveYear: '',
     oneYear: '',
     sixMonth: '',
-    fourMonth: '',
     oneMonth: '',
     weekly: '',
 };
@@ -57,7 +56,11 @@ export default function DashboardPage() {
                 const docRef = doc(db, 'users', user.uid);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists() && docSnap.data().profile?.firstName) {
-                    setUserName(docSnap.data().profile.firstName);
+                    const profile = docSnap.data().profile;
+                    const fullName = profile.lastName
+                        ? `${profile.firstName} ${profile.lastName}`
+                        : profile.firstName;
+                    setUserName(fullName);
                 } else {
                     setUserName(user.displayName?.split(' ')[0] || 'User');
                 }
@@ -185,22 +188,26 @@ export default function DashboardPage() {
                 <div className={styles.container}>
                     {/* Welcome & Status Bar */}
                     <div className={styles.headerSection}>
-                        <h1 className={styles.welcomeTitle}>
-                            Welcome, <span className={styles.welcomeName}>{userName}</span>
-                        </h1>
-                        <div className={styles.statusBar}>
-                            {isSaving && (
-                                <span className={styles.savingIndicator}>
-                                    <span className={styles.savingDot}></span>
-                                    Saving...
-                                </span>
-                            )}
-                            {!isSaving && lastSaved && (
-                                <span className={styles.savedIndicator}>
-                                    ✓ Saved
-                                </span>
-                            )}
+                        <div className={styles.welcomeRow}>
+                            <h1 className={styles.welcomeTitle}>
+                                Welcome, <span className={styles.welcomeName}>{userName}</span>
+                            </h1>
+                            <div className={styles.statusBar}>
+                                {isSaving && (
+                                    <span className={styles.savingIndicator}>
+                                        <span className={styles.savingDot}></span>
+                                        Saving...
+                                    </span>
+                                )}
+                                {!isSaving && lastSaved && (
+                                    <span className={styles.savedIndicator}>
+                                        ✓ Saved
+                                    </span>
+                                )}
+                            </div>
                         </div>
+                        {/* Long Term Goals Dropdown - Right Side */}
+                        <LongTermGoalsDropdown goals={goals} onGoalChange={handleGoalChange} />
                     </div>
 
                     {/* Goals Section */}

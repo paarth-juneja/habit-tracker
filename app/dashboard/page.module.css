@@ -42,8 +42,15 @@
 .headerSection {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 2rem;
+    gap: 1.5rem;
+}
+
+.welcomeRow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .welcomeTitle {

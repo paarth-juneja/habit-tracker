@@ -8,7 +8,6 @@ interface Goals {
     fiveYear: string;
     oneYear: string;
     sixMonth: string;
-    fourMonth: string;
     oneMonth: string;
     weekly: string;
 }
@@ -18,13 +17,10 @@ interface GoalGridProps {
     onGoalChange: (key: keyof Goals, value: string) => void;
 }
 
+// Main grid only shows This Month Goal and This Week
+// Long-term goals are in the LongTermGoalsDropdown
 const goalConfig = [
-    { key: 'tenYear' as const, title: '10 Year Vision', subtitle: '10 Years', color: '#ef4444' },
-    { key: 'fiveYear' as const, title: '5 Year Goal', subtitle: '5 Years', color: '#f97316' },
-    { key: 'oneYear' as const, title: '1 Year Goal', subtitle: '1 Year', color: '#eab308' },
-    { key: 'sixMonth' as const, title: '6 Month Goal', subtitle: '6 Months', color: '#22c55e' },
-    { key: 'fourMonth' as const, title: '4 Month Goal', subtitle: '4 Months', color: '#14b8a6' },
-    { key: 'oneMonth' as const, title: '1 Month Goal', subtitle: '1 Month', color: '#3b82f6' },
+    { key: 'oneMonth' as const, title: 'This Month Goal', subtitle: 'This Month', color: '#3b82f6' },
     { key: 'weekly' as const, title: 'This Week', subtitle: 'Weekly', color: '#a855f7' },
 ];
 

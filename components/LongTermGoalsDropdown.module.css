@@ -1,0 +1,180 @@
+.container {
+    position: relative;
+    width: 320px;
+    flex-shrink: 0;
+    z-index: 100;
+}
+
+.toggleButton {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    background: rgba(30, 30, 40, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(12px);
+}
+
+.toggleButton:hover {
+    background: rgba(40, 40, 55, 0.95);
+    border-color: rgba(167, 139, 250, 0.3);
+}
+
+.toggleIcon {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    transition: transform 0.2s ease;
+}
+
+.toggleText {
+    flex: 1;
+    text-align: left;
+}
+
+.dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 100%;
+    margin-top: 0.5rem;
+    background: rgba(20, 20, 30, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.75rem;
+    backdrop-filter: blur(16px);
+    max-height: 70vh;
+    overflow-y: auto;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.goalItem {
+    padding: 1rem;
+    border-radius: 10px;
+    background: rgba(30, 30, 45, 0.8);
+    border-left: 3px solid var(--accent-color);
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.goalItem:last-child {
+    margin-bottom: 0;
+}
+
+.goalItem:hover {
+    background: rgba(40, 40, 55, 0.9);
+}
+
+.goalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.goalTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.goalSubtitle {
+    font-size: 0.75rem;
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+.goalContent {
+    min-height: 60px;
+}
+
+.goalText {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.goalText:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.placeholder {
+    color: rgba(255, 255, 255, 0.4);
+    font-style: italic;
+}
+
+.textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.5rem;
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-family: inherit;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.textarea:focus {
+    border-color: #a78bfa;
+}
+
+.textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* Scrollbar styling */
+.dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 3px;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+    background: rgba(167, 139, 250, 0.3);
+    border-radius: 3px;
+}
+
+.dropdown::-webkit-scrollbar-thumb:hover {
+    background: rgba(167, 139, 250, 0.5);
+}
+
+/* Responsive: Stack on mobile */
+@media (max-width: 1024px) {
+    .container {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
