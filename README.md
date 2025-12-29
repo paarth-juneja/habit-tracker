@@ -1,105 +1,108 @@
-# 🎯 Habit Tracker
+# 🎯 Habit Tracker & Life Organizer
 
-A full-stack habit tracking application with **Firebase Authentication**, **Firestore Database**, multi-timeframe goal setting, and a detailed monthly habit tracker.
+A comprehensive, modern web application designed to help you organize your life, track habits, and achieve your goals. Built with Next.js 14 and Firebase.
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
-![Firebase](https://img.shields.io/badge/Firebase-Auth%20&%20Firestore-orange?style=flat-square&logo=firebase)
+> **🌟 Live:** [Everform](everform.vercel.app & everform.celron.in)
 
 ## ✨ Features
 
-- **Multi-Timeframe Goals**: Set and track goals from 10-year visions to weekly tasks
-- **Monthly Habit Tracker**: Interactive grid to track daily habits with completion percentages
-- **Google Authentication**: Secure sign-in with Firebase Auth (Popup)
-- **Real-time Sync**: Data instantly synced to Firestore
-- **Offline Support**: Local caching for seamless experience
-- **Beautiful Dark UI**: Modern glassmorphism design with smooth animations
+- **📊 Dashboard & Goals**
+  - **Goal Tracking**: Set and monitor Long Term and Short Term goals.
+  - **Visual Statistics**: Track your habit streaks and completion rates.
 
-## 🚀 Quick Start
+- **✅ Advanced Todo Management**
+  - **Three Timelines**: Manage tasks by **Today**, **This Week**, and **This Month**.
+  - **Drag & Drop**: Seamlessly move tasks between lists and calendar dates.
+  - **Bulk Actions**: Delete all, delete completed, and move pending tasks to the next period.
+  - **Smart Organization**: Automatically organizes tasks based on your focus.
 
-### Prerequisites
+- **📓 Journal & Reflection**
+  - **Daily Logging**: Keep track of your thoughts and progress.
+  - **Calendar View**: Visual overview of your journal entries and productivity.
 
-- Node.js 18+ installed
-- A Google Firebase Project
-
-### 1. Install Dependencies
-
-```bash
-cd d:\antigravity_projects\tracker
-npm install
-```
-
-### 2. Set Up Firebase
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project
-3. Enable **Authentication** and turn on the **Google** provider
-4. Enable **Cloud Firestore** and start in **Test Mode** (or Production Mode)
-5. Go to **Project Settings** > **General** > **Your apps** > **Web (</>)**
-6. Copy the configuration object
-
-### 3. Configure Environment Variables
-
-Create `.env.local`:
-
-```bash
-touch .env.local
-```
-
-Add your Firebase keys:
-
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-```
-
-### 4. Run Development Server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## 📁 Project Structure
-
-```
-tracker/
-├── app/
-│   ├── dashboard/
-│   │   ├── layout.tsx           # Dashboard layout
-│   │   └── page.tsx             # Main dashboard (Firestore logic)
-│   ├── login/
-│   │   └── page.tsx             # Firebase Login page
-│   ├── globals.css              # Global styles
-│   ├── layout.tsx               # Root layout
-│   └── page.tsx                 # Landing page
-├── components/
-│   ├── AuthProvider.tsx         # Firebase Auth Context
-│   ├── GoalCard.tsx             # Individual goal card
-│   ├── GoalGrid.tsx             # Grid of all goals
-│   ├── HabitTracker.tsx         # Monthly habit grid
-│   ├── Header.tsx               # Navigation header
-│   └── Providers.tsx            # Root providers wrapper
-├── lib/
-│   ├── firebase.ts              # Firebase initialization
-│   └── localStorage.ts          # Cache utilities
-└── package.json
-```
+- **👤 User Profile**
+  - **Personalized Experience**: Manage your profile details (Occupation, Age, etc.).
+  - **Secure Authentication**: Powered by Firebase Auth.
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 14 (App Router)
-- **Language**: TypeScript
-- **Authentication**: Firebase Auth (Google)
-- **Database**: Firebase Cloud Firestore
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Authentication**: [Firebase Auth](https://firebase.google.com/products/auth)
+- **Database**: [Firebase Cloud Firestore](https://firebase.google.com/products/firestore) (implied)
 - **Styling**: CSS Modules
-- **Deployment**: Vercel
+- **Drag & Drop**: [@dnd-kit](https://dndkit.com/)
 
-## 📝 License
+## 🚀 Getting Started
 
-MIT
+Follow these instructions to set up the project locally.
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- npm or yarn
+- A Firebase project
+
+### Installation
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/paarth-juneja/habit-tracker.git
+    cd habit-tracker
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+3.  **Configure Environment Variables**
+    Create a `.env.local` file in the root directory and add your Firebase configuration:
+    ```env
+    NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+    NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+    ```
+
+4.  **Run the development server**
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+
+5.  **Open the app**
+    Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 📂 Project Structure
+
+```bash
+tracker/
+├── app/                  # Next.js App Router pages
+│   ├── dashboard/        # Dashboard page
+│   ├── journal/          # Journaling features
+│   ├── todo/             # Todo list & Drag-n-Drop logic
+│   ├── login/            # Authentication
+│   └── profile/          # User profile
+├── components/           # Reusable UI components
+│   ├── Journal/          # Calendar & Month selectors
+│   ├── Todo/             # TodoList, Items
+│   └── ...
+├── lib/                  # Utilities & Firebase config
+└── ...
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1.  Fork the project
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
