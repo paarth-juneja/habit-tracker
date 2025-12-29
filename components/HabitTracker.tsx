@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import styles from './HabitTracker.module.css';
+import YearMonthPicker from './Journal/YearMonthPicker';
 
 interface Habit {
     id: string;
@@ -40,6 +41,7 @@ export default function HabitTracker({
     const [newHabitName, setNewHabitName] = useState('');
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState('');
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
 
     const daysInMonth = getDaysInMonth(year, month);
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -122,16 +124,32 @@ export default function HabitTracker({
                 </p>
             </div>
 
+
             <div className={styles.monthNavigation}>
                 <button onClick={handlePrevMonth} className={styles.navButton}>
                     <span>←</span>
                 </button>
-                <h3 className={styles.monthTitle}>
+                <h3
+                    className={styles.monthTitle}
+                    onClick={() => setIsPickerOpen(true)}
+                    style={{ cursor: 'pointer' }}
+                    title="Click to change date"
+                >
                     {monthNames[month - 1]} {year}
                 </h3>
                 <button onClick={handleNextMonth} className={styles.navButton}>
                     <span>→</span>
                 </button>
+
+                {isPickerOpen && (
+                    <YearMonthPicker
+                        currentDate={new Date(year, month - 1)}
+                        onSelect={(date) => {
+                            onMonthChange(date.getFullYear(), date.getMonth() + 1);
+                        }}
+                        onClose={() => setIsPickerOpen(false)}
+                    />
+                )}
             </div>
 
             <div className={styles.trackerWrapper}>

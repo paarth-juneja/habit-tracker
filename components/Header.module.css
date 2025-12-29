@@ -108,3 +108,25 @@
     font-size: 1.25rem;
   }
 }
+
+.navLinks {
+  display: flex;
+  gap: 1rem;
+  margin-right: 1rem;
+  align-items: center;
+}
+
+.navBtn {
+  background: none;
+  border: none;
+  color: var(--foreground);
+  font-size: 0.95rem;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  padding: 0.5rem;
+}
+
+.navBtn:hover {
+  opacity: 1;
+}

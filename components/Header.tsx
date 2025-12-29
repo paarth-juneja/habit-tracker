@@ -42,6 +42,20 @@ export default function Header() {
                             )}
                             <span className={styles.userName}>{user.displayName}</span>
                         </div>
+                        <nav className={styles.navLinks}>
+                            <button
+                                onClick={() => router.push('/dashboard')}
+                                className={styles.navBtn}
+                            >
+                                Dashboard
+                            </button>
+                            <button
+                                onClick={() => router.push('/journal')}
+                                className={styles.navBtn}
+                            >
+                                Journal
+                            </button>
+                        </nav>
                         <button
                             onClick={() => router.push('/profile')}
                             className={styles.profileBtn}

@@ -1,0 +1,71 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dateTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    margin: 0;
+}
+
+.status {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+    min-width: 60px;
+    text-align: right;
+}
+
+.saving {
+    color: #818cf8;
+}
+
+.saved {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.editor {
+    flex: 1;
+    background: transparent;
+    border: none;
+    resize: none;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    font-family: inherit;
+    outline: none;
+    padding: 0;
+}
+
+.editor::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+/* Custom scrollbar for the textarea */
+.editor::-webkit-scrollbar {
+    width: 8px;
+}
+
+.editor::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.editor::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.editor::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
