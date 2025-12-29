@@ -1,0 +1,368 @@
+.container {
+    margin-bottom: 3rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.sectionTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+}
+
+.sectionSubtitle {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+.monthNavigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.navButton {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navButton:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.monthTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    min-width: 200px;
+    text-align: center;
+}
+
+.trackerWrapper {
+    background: linear-gradient(145deg, rgba(40, 40, 60, 0.6), rgba(30, 30, 50, 0.8));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+    overflow-x: auto;
+}
+
+.tracker {
+    min-width: max-content;
+}
+
+.headerRow {
+    display: flex;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 0.5rem;
+}
+
+.habitNameHeader {
+    width: 180px;
+    min-width: 180px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-right: 1rem;
+}
+
+.dayHeader {
+    width: 36px;
+    min-width: 36px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 0.25rem;
+}
+
+.dayHeader.today {
+    color: #a78bfa;
+    font-weight: 700;
+    background: rgba(167, 139, 250, 0.15);
+    border-radius: 6px;
+}
+
+.progressHeader {
+    width: 60px;
+    min-width: 60px;
+    text-align: center;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.85rem;
+    padding-left: 0.5rem;
+}
+
+.habitRow {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+}
+
+.habitRow:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.habitName {
+    width: 180px;
+    min-width: 180px;
+    display: flex;
+    align-items: center;
+    padding-right: 1rem;
+    gap: 0.5rem;
+}
+
+.habitText {
+    flex: 1;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    cursor: pointer;
+    padding: 0.25rem 0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.habitText:hover {
+    color: #a78bfa;
+}
+
+.editInput {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(167, 139, 250, 0.5);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    color: #ffffff;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.deleteBtn {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    color: rgba(239, 68, 68, 0.6);
+    font-size: 1.25rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.habitRow:hover .deleteBtn {
+    opacity: 1;
+}
+
+.deleteBtn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.dayCell {
+    width: 36px;
+    min-width: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+}
+
+.todayCell {
+    background: rgba(167, 139, 250, 0.08);
+    border-radius: 6px;
+}
+
+.checkbox {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkbox:hover:not(.future) {
+    border-color: rgba(34, 197, 94, 0.5);
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.checkbox.checked {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-color: #22c55e;
+}
+
+.checkbox.future {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.checkmark {
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.progressCell {
+    width: 60px;
+    min-width: 60px;
+    text-align: center;
+    padding-left: 0.5rem;
+}
+
+.progressValue {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #22c55e;
+}
+
+.addRow {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0 0.5rem 0;
+}
+
+.addHabitInput {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 300px;
+}
+
+.newHabitInput {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.newHabitInput::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.newHabitInput:focus {
+    outline: none;
+    border-color: rgba(167, 139, 250, 0.5);
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+}
+
+.addButton {
+    padding: 0.6rem 1.25rem;
+    background: linear-gradient(135deg, #a78bfa, #818cf8);
+    border: none;
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.addButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.4);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 3rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+/* Scrollbar styling for the tracker */
+.trackerWrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.trackerWrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.trackerWrapper::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.trackerWrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+    .header {
+        text-align: left;
+    }
+
+    .sectionTitle {
+        font-size: 1.5rem;
+    }
+
+    .monthNavigation {
+        gap: 1rem;
+    }
+
+    .monthTitle {
+        font-size: 1.25rem;
+        min-width: 150px;
+    }
+
+    .habitNameHeader,
+    .habitName {
+        width: 140px;
+        min-width: 140px;
+    }
+
+    .dayHeader,
+    .dayCell {
+        width: 32px;
+        min-width: 32px;
+    }
+
+    .checkbox {
+        width: 24px;
+        height: 24px;
+    }
+}
