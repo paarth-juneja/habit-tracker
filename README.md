@@ -2,7 +2,7 @@
 
 A comprehensive, modern web application designed to help you organize your life, track habits, and achieve your goals. Built with Next.js 14 and Firebase.
 
-> **🌟 Live:** [Everform](everform.vercel.app & everform.celron.in)
+> **🌟 Live:** [everform.vercel.app](https://everform.vercel.app) & [everform.celron.in](https://everform.celron.in)
 
 ## ✨ Features
 
