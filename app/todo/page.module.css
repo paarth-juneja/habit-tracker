@@ -1,0 +1,90 @@
+.page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    max-width: 1600px;
+    /* Slightly wider to accommodate 3 lists */
+    margin: 0 auto;
+    width: 100%;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    /* Reduced sidebar slightly as requested */
+    gap: 2rem;
+    height: calc(100vh - 120px);
+}
+
+.sidebar {
+    background: rgba(30, 30, 50, 0.5);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    overflow-y: auto;
+}
+
+/* Main Content: Split into Month/Week col and Today col */
+.mainContent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    height: 100%;
+}
+
+.leftColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    height: 100%;
+}
+
+.sectionMonth {
+    flex: 1;
+}
+
+.sectionWeek {
+    flex: 1;
+}
+
+.rightColumn {
+    height: 100%;
+}
+
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns: 300px 1fr;
+    }
+
+    .mainContent {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        height: auto;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .mainContent {
+        display: flex;
+        flex-direction: column;
+    }
+}

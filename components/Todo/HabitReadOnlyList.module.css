@@ -1,0 +1,45 @@
+.container {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid rgba(255, 0, 0, 0.5);
+    /* Matching the red line in screenshot sketch approximately */
+}
+
+.header {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #fca5a5;
+    /* Light red/pink to match the vibe */
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.bullet {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.name {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.empty {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.85rem;
+    font-style: italic;
+    padding: 0.5rem;
+}

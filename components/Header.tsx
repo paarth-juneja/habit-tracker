@@ -55,6 +55,12 @@ export default function Header() {
                             >
                                 Journal
                             </button>
+                            <button
+                                onClick={() => router.push('/todo')}
+                                className={styles.navBtn}
+                            >
+                                To-Do
+                            </button>
                         </nav>
                         <button
                             onClick={() => router.push('/profile')}
