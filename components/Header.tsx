@@ -2,22 +2,16 @@
 
 import Image from 'next/image';
 import styles from './Header.module.css';
+import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 export default function Header() {
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     const router = useRouter();
 
     const handleSignOut = async () => {
-        try {
-            await signOut(auth);
-            router.push('/login');
-        } catch (error) {
-            console.error('Error signing out:', error);
-        }
+        await logout();
     };
 
     return (
