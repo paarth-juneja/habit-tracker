@@ -1,0 +1,83 @@
+.container {
+    position: relative;
+    display: inline-block;
+}
+
+.trigger {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 1.2rem;
+    color: #888;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trigger:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background-color: #1a1b23;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    min-width: 180px;
+    overflow: hidden;
+    animation: fadeIn 0.1s ease-out;
+}
+
+.menuItem {
+    width: 100%;
+    text-align: left;
+    padding: 10px 16px;
+    background: none;
+    border: none;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    font-family: inherit;
+}
+
+.menuItem:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.menuItem.danger {
+    color: #ff6b6b;
+}
+
+.menuItem.danger:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+}
+
+.divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 4px 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

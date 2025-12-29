@@ -5,6 +5,7 @@ import { TodoItem } from '@/lib/todo';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import styles from './TodoList.module.css';
+import DropdownMenu from '../DropdownMenu';
 
 interface TodoListProps {
     id: string; // The droppable ID (e.g., 'list:daily', 'list:weekly')
@@ -13,6 +14,11 @@ interface TodoListProps {
     onAdd: (text: string) => void;
     onToggle: (id: string, completed: boolean) => void;
     onDelete: (id: string) => void;
+    onDeleteAll?: () => void;
+    onDeleteCompleted?: () => void;
+    onMarkAllCompleted?: () => void;
+    onDeletePending?: () => void;
+    moveActions?: { label: string, onClick: () => void }[];
 }
 
 function DraggableTodoItem({ item, onToggle, onDelete }: {
@@ -61,7 +67,19 @@ function DraggableTodoItem({ item, onToggle, onDelete }: {
     );
 }
 
-export default function TodoList({ id, title, items, onAdd, onToggle, onDelete }: TodoListProps) {
+export default function TodoList({
+    id,
+    title,
+    items,
+    onAdd,
+    onToggle,
+    onDelete,
+    onDeleteAll,
+    onDeleteCompleted,
+    onMarkAllCompleted,
+    onDeletePending,
+    moveActions
+}: TodoListProps) {
     const [newItemText, setNewItemText] = useState('');
 
     const { setNodeRef, isOver } = useDroppable({
@@ -77,13 +95,34 @@ export default function TodoList({ id, title, items, onAdd, onToggle, onDelete }
         }
     };
 
+    const dropdownItems: (import('../DropdownMenu').DropdownItem | 'divider')[] = [];
+    if (onMarkAllCompleted) dropdownItems.push({ label: 'Mark all as completed', onClick: onMarkAllCompleted });
+    if (onDeleteCompleted) dropdownItems.push({ label: 'Delete completed', onClick: onDeleteCompleted, danger: true });
+    if (onDeletePending) dropdownItems.push({ label: 'Delete pending', onClick: onDeletePending });
+    if (onDeleteAll) dropdownItems.push({ label: 'Delete all', onClick: onDeleteAll, danger: true });
+
+    if (dropdownItems.length > 0 && moveActions && moveActions.length > 0) {
+        dropdownItems.push('divider' as const);
+    }
+
+    if (moveActions) {
+        moveActions.forEach(action => {
+            dropdownItems.push({ label: action.label, onClick: action.onClick });
+        });
+    }
+
     return (
         <div
             ref={setNodeRef}
             className={styles.container}
             style={isOver ? { borderColor: '#fff', backgroundColor: 'rgba(255,255,255,0.05)' } : {}}
         >
-            <h3 className={styles.title}>{title}</h3>
+            <div className={styles.header}>
+                <h3 className={styles.title}>{title}</h3>
+                {(dropdownItems.length > 0) && (
+                    <DropdownMenu items={dropdownItems} />
+                )}
+            </div>
 
             <form onSubmit={handleSubmit} className={styles.inputForm}>
                 <input

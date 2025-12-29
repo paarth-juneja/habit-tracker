@@ -44,16 +44,16 @@ export default function Header() {
                                 Dashboard
                             </button>
                             <button
-                                onClick={() => router.push('/journal')}
-                                className={styles.navBtn}
-                            >
-                                Journal
-                            </button>
-                            <button
                                 onClick={() => router.push('/todo')}
                                 className={styles.navBtn}
                             >
                                 To-Do
+                            </button>
+                            <button
+                                onClick={() => router.push('/journal')}
+                                className={styles.navBtn}
+                            >
+                                Journal
                             </button>
                         </nav>
                         <button

@@ -11,7 +11,7 @@ import Modal from '@/components/Modal'; // Import the new Modal
 import { useAuth } from '@/components/AuthProvider';
 import {
     getDailyId, getWeeklyId, getMonthlyId,
-    subscribeTodoList, saveTodoList,
+    subscribeTodoList, saveTodoList, getTodoList,
     getTodoDatesForMonth,
     TodoItem, TodoPeriod
 } from '@/lib/todo';
@@ -151,6 +151,95 @@ export default function TodoPage() {
 
         const newList = list.filter(item => item.id !== itemId);
         await saveTodoList(user.uid, period, id, newList);
+    }, [user, selectedDate]);
+
+    // --- Bulk Actions ---
+
+    const handleDeleteAll = useCallback(async (period: TodoPeriod) => {
+        if (!user) return;
+        let id = '';
+        if (period === 'daily') id = getDailyId(selectedDate);
+        else if (period === 'weekly') id = getWeeklyId(selectedDate);
+        else if (period === 'monthly') id = getMonthlyId(selectedDate);
+
+        if (window.confirm('Are you sure you want to delete all tasks in this list?')) {
+            await saveTodoList(user.uid, period, id, []);
+        }
+    }, [user, selectedDate]);
+
+    const handleMarkAllCompleted = useCallback(async (period: TodoPeriod, list: TodoItem[]) => {
+        if (!user) return;
+        let id = '';
+        if (period === 'daily') id = getDailyId(selectedDate);
+        else if (period === 'weekly') id = getWeeklyId(selectedDate);
+        else if (period === 'monthly') id = getMonthlyId(selectedDate);
+
+        const newList = list.map(item => ({ ...item, completed: true }));
+        await saveTodoList(user.uid, period, id, newList);
+    }, [user, selectedDate]);
+
+    const handleDeleteCompleted = useCallback(async (period: TodoPeriod, list: TodoItem[]) => {
+        if (!user) return;
+        let id = '';
+        if (period === 'daily') id = getDailyId(selectedDate);
+        else if (period === 'weekly') id = getWeeklyId(selectedDate);
+        else if (period === 'monthly') id = getMonthlyId(selectedDate);
+
+        // Keep not completed
+        const newList = list.filter(item => !item.completed);
+        await saveTodoList(user.uid, period, id, newList);
+    }, [user, selectedDate]);
+
+    const handleDeletePending = useCallback(async (period: TodoPeriod, list: TodoItem[]) => {
+        if (!user) return;
+        let id = '';
+        if (period === 'daily') id = getDailyId(selectedDate);
+        else if (period === 'weekly') id = getWeeklyId(selectedDate);
+        else if (period === 'monthly') id = getMonthlyId(selectedDate);
+
+        const newList = list.filter(item => item.completed); // Keep only completed
+        await saveTodoList(user.uid, period, id, newList);
+    }, [user, selectedDate]);
+
+    const handleMovePending = useCallback(async (sourcePeriod: TodoPeriod, list: TodoItem[], targetDateOffset: number, offsetType: 'day' | 'week' | 'month') => {
+        if (!user || list.length === 0) return;
+
+        // Items to move (Pending/Not Completed)
+        const itemsToMove = list.filter(item => !item.completed);
+        if (itemsToMove.length === 0) return; // Nothing to move
+
+        // Items to keep (Completed)
+        const itemsToKeep = list.filter(item => item.completed);
+
+        // Calculate Target ID
+        const targetDate = new Date(selectedDate);
+        if (offsetType === 'day') targetDate.setDate(targetDate.getDate() + targetDateOffset);
+        else if (offsetType === 'week') targetDate.setDate(targetDate.getDate() + (targetDateOffset * 7));
+        else if (offsetType === 'month') targetDate.setMonth(targetDate.getMonth() + targetDateOffset);
+
+        let targetId = '';
+        if (sourcePeriod === 'daily') targetId = getDailyId(targetDate);
+        else if (sourcePeriod === 'weekly') targetId = getWeeklyId(targetDate);
+        else if (sourcePeriod === 'monthly') targetId = getMonthlyId(targetDate);
+
+        // 1. Get Target List
+        const targetItems = await getTodoList(user.uid, sourcePeriod, targetId);
+
+        // 2. Append items (avoid duplicates by ID)
+        const nonDuplicateItems = itemsToMove.filter(item => !targetItems.some(ti => ti.id === item.id));
+        const newTargetList = [...targetItems, ...nonDuplicateItems];
+
+        // 3. Save Target
+        await saveTodoList(user.uid, sourcePeriod, targetId, newTargetList);
+
+        // 4. Update Source (keep completed)
+        let sourceId = '';
+        if (sourcePeriod === 'daily') sourceId = getDailyId(selectedDate);
+        else if (sourcePeriod === 'weekly') sourceId = getWeeklyId(selectedDate);
+        else if (sourcePeriod === 'monthly') sourceId = getMonthlyId(selectedDate);
+
+        await saveTodoList(user.uid, sourcePeriod, sourceId, itemsToKeep);
+
     }, [user, selectedDate]);
 
     // --- Drag and Drop Logic ---
@@ -412,6 +501,11 @@ export default function TodoPage() {
                                         onAdd={(text) => handleAdd(text, 'monthly', monthlyTodos)}
                                         onToggle={(id, val) => handleToggle(id, val, 'monthly', monthlyTodos)}
                                         onDelete={(id) => handleDelete(id, 'monthly', monthlyTodos)}
+                                        onDeleteAll={() => handleDeleteAll('monthly')}
+                                        onDeleteCompleted={() => handleDeleteCompleted('monthly', monthlyTodos)}
+                                        onMarkAllCompleted={() => handleMarkAllCompleted('monthly', monthlyTodos)}
+                                        onDeletePending={() => handleDeletePending('monthly', monthlyTodos)}
+                                        moveActions={[{ label: 'Move pending to Next Month', onClick: () => handleMovePending('monthly', monthlyTodos, 1, 'month') }]}
                                     />
                                 </div>
                                 <div className={styles.sectionWeek}>
@@ -422,6 +516,11 @@ export default function TodoPage() {
                                         onAdd={(text) => handleAdd(text, 'weekly', weeklyTodos)}
                                         onToggle={(id, val) => handleToggle(id, val, 'weekly', weeklyTodos)}
                                         onDelete={(id) => handleDelete(id, 'weekly', weeklyTodos)}
+                                        onDeleteAll={() => handleDeleteAll('weekly')}
+                                        onDeleteCompleted={() => handleDeleteCompleted('weekly', weeklyTodos)}
+                                        onMarkAllCompleted={() => handleMarkAllCompleted('weekly', weeklyTodos)}
+                                        onDeletePending={() => handleDeletePending('weekly', weeklyTodos)}
+                                        moveActions={[{ label: 'Move pending to Next Week', onClick: () => handleMovePending('weekly', weeklyTodos, 1, 'week') }]}
                                     />
                                 </div>
                             </div>
@@ -433,6 +532,11 @@ export default function TodoPage() {
                                     onAdd={(text) => handleAdd(text, 'daily', dailyTodos)}
                                     onToggle={(id, val) => handleToggle(id, val, 'daily', dailyTodos)}
                                     onDelete={(id) => handleDelete(id, 'daily', dailyTodos)}
+                                    onDeleteAll={() => handleDeleteAll('daily')}
+                                    onDeleteCompleted={() => handleDeleteCompleted('daily', dailyTodos)}
+                                    onMarkAllCompleted={() => handleMarkAllCompleted('daily', dailyTodos)}
+                                    onDeletePending={() => handleDeletePending('daily', dailyTodos)}
+                                    moveActions={[{ label: 'Move pending to Tomorrow', onClick: () => handleMovePending('daily', dailyTodos, 1, 'day') }]}
                                 />
                             </div>
                         </div>

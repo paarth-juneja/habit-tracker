@@ -9,11 +9,18 @@
     min-height: 200px;
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
 .title {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: 1rem;
     color: #fff;
+    margin: 0;
 }
 
 .inputForm {
