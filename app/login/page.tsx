@@ -4,8 +4,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import styles from './page.module.css';
 import { useAuth } from '@/components/AuthProvider';
-import { updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { clearAuthCache } from '@/lib/cacheManager';
 
 export default function LoginPage() {
     const { user, loading } = useAuth();
@@ -21,6 +22,9 @@ export default function LoginPage() {
     const handleGoogleSignIn = async () => {
         setIsSigningIn(true);
         try {
+            // Clear any stale auth cache before new sign-in attempt
+            await clearAuthCache();
+
             const provider = new GoogleAuthProvider();
             provider.setCustomParameters({ prompt: 'select_account' });
             await signInWithPopup(auth, provider);
@@ -30,6 +34,7 @@ export default function LoginPage() {
             setIsSigningIn(false);
         }
     };
+
 
     if (loading || isSigningIn) {
         return (
