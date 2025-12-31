@@ -21,6 +21,7 @@ import {
     useSensor,
     useSensors,
     PointerSensor,
+    TouchSensor,
     DragStartEvent,
     DragEndEvent,
     DragOverEvent,
@@ -67,6 +68,12 @@ export default function TodoPage() {
 
     // Sensors
     const sensors = useSensors(
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250,
+                tolerance: 5,
+            },
+        }),
         useSensor(PointerSensor, {
             activationConstraint: {
                 distance: 8,

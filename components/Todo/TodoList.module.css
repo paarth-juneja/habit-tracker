@@ -222,6 +222,7 @@
     padding-top: 4px;
     margin-right: 4px;
     user-select: none;
+    touch-action: none;
     font-size: 0.8rem;
     letter-spacing: -1px;
 }

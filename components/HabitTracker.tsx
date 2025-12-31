@@ -6,6 +6,7 @@ import {
     closestCenter,
     KeyboardSensor,
     PointerSensor,
+    TouchSensor,
     useSensor,
     useSensors,
     DragEndEvent
@@ -175,6 +176,12 @@ export default function HabitTracker({
     const [isPickerOpen, setIsPickerOpen] = useState(false);
 
     const sensors = useSensors(
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 250,
+                tolerance: 5,
+            },
+        }),
         useSensor(PointerSensor, {
             activationConstraint: {
                 distance: 8,
