@@ -27,6 +27,7 @@ import {
     pointerWithin
 } from '@dnd-kit/core';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
+import { arrayMove } from '@dnd-kit/sortable';
 import styles from './page.module.css';
 
 type DropAction = 'MOVE' | 'COPY';
@@ -131,14 +132,14 @@ export default function TodoPage() {
         await saveTodoList(user.uid, period, id, newList);
     }, [user, selectedDate]);
 
-    const handleToggle = useCallback(async (itemId: string, completed: boolean, period: TodoPeriod, list: TodoItem[]) => {
+    const handleUpdate = useCallback(async (itemId: string, updates: Partial<TodoItem>, period: TodoPeriod, list: TodoItem[]) => {
         if (!user) return;
         let id = '';
         if (period === 'daily') id = getDailyId(selectedDate);
         else if (period === 'weekly') id = getWeeklyId(selectedDate);
         else if (period === 'monthly') id = getMonthlyId(selectedDate);
 
-        const newList = list.map(item => item.id === itemId ? { ...item, completed } : item);
+        const newList = list.map(item => item.id === itemId ? { ...item, ...updates } : item);
         await saveTodoList(user.uid, period, id, newList);
     }, [user, selectedDate]);
 
@@ -336,7 +337,6 @@ export default function TodoPage() {
                 const targetId = getDailyId(targetDate);
                 await moveItem(item, 'daily', 'daily', targetId);
             }
-
             // Source: Weekly -> Calendar (Popup: Shift to Week / Shift to Date)
             else if (activeSourceList === 'weekly') {
                 setModalConfig({
@@ -356,7 +356,6 @@ export default function TodoPage() {
                             label: 'Shift to Date',
                             onClick: async () => {
                                 const targetId = getDailyId(targetDate);
-                                // Moving from Weekly to Daily (Remove from Weekly, Add to Daily)
                                 await moveItem(item, 'weekly', 'daily', targetId);
                                 closeModal();
                             }
@@ -364,7 +363,6 @@ export default function TodoPage() {
                     ]
                 });
             }
-
             // Source: Monthly -> Calendar (Popup: Month / Week / Date)
             else if (activeSourceList === 'monthly') {
                 setModalConfig({
@@ -372,9 +370,7 @@ export default function TodoPage() {
                     title: 'Drop Task',
                     message: `Where do you want to drop this monthly task?`,
                     actions: [
-                        { // Drop on Month (of that date) - likely just copy/move to that month?
-                            // "if you take month one and drop it on something on calender it will ask if you want to drop on month, week or that date"
-                            // Assuming Copy logic for Month breakdowns or Move? keeping "Copy" for safety/breakdown workflow.
+                        { // Drop on Month
                             label: 'Add to Month',
                             onClick: async () => {
                                 const targetId = getMonthlyId(targetDate);
@@ -386,7 +382,7 @@ export default function TodoPage() {
                             label: 'Add to Week',
                             onClick: async () => {
                                 const targetId = getWeeklyId(targetDate);
-                                await copyItem(item, 'weekly', targetId); // "month... drop on week then it copies"
+                                await copyItem(item, 'weekly', targetId);
                                 closeModal();
                             }
                         },
@@ -394,7 +390,7 @@ export default function TodoPage() {
                             label: 'Add to Date',
                             onClick: async () => {
                                 const targetId = getDailyId(targetDate);
-                                await copyItem(item, 'daily', targetId); // "similarly if you drop on day"
+                                await copyItem(item, 'daily', targetId);
                                 closeModal();
                             }
                         }
@@ -402,57 +398,68 @@ export default function TodoPage() {
                 });
             }
         }
-        else if (overType === 'todo-list') {
-            // Dropping on another list (Today/Week/Month)
-            const targetListId = overData?.listId; // 'list:daily', 'list:weekly', 'list:monthly'? No, I passed `id` prop.
-            // In TodoPage render:
-            // Daily -> id={getDailyId(selectedDate)} (which looks like YYYY-MM-DD)
-            // Wait, standardizing ID format for detection is better. 
-            // In TodoList component, I used `id` as `useDroppable` id.
-            // So over.id will be "2025-10-27" (daily) or "2025-W43" (weekly).
-
-            // I need to know which PERIOD the target list corresponds to.
-            // I can infer from format OR pass explicit type in data. Provide explicit type.
-
-            // To fix TodoList droppable data:
-            // I need to pass the period type to TodoList so it passes it to useDroppable data.
-            // I'll update TodoList props later or infer now.
-            // Let's rely on checking against current IDs.
-
-            const dailyId = getDailyId(selectedDate);
-            const weeklyId = getWeeklyId(selectedDate);
-            const monthlyId = getMonthlyId(selectedDate);
-
+        else if (overType === 'todo-list' || overType === 'todo-item') {
+            // 1. Identify Target Period & ID
             let targetPeriod: TodoPeriod | null = null;
-            if (over.id === dailyId) targetPeriod = 'daily';
-            else if (over.id === weeklyId) targetPeriod = 'weekly';
-            else if (over.id === monthlyId) targetPeriod = 'monthly';
+            let targetListId = '';
 
-            if (!targetPeriod) return; // Dropped on unknown list
+            if (overType === 'todo-list') {
+                targetListId = over.id as string;
+                if (targetListId === getDailyId(selectedDate)) targetPeriod = 'daily';
+                else if (targetListId === getWeeklyId(selectedDate)) targetPeriod = 'weekly';
+                else if (targetListId === getMonthlyId(selectedDate)) targetPeriod = 'monthly';
+            }
+            else if (overType === 'todo-item') {
+                // If dropped on an item, find which list it belongs to
+                if (dailyTodos.some(i => i.id === over.id)) { targetPeriod = 'daily'; targetListId = getDailyId(selectedDate); }
+                else if (weeklyTodos.some(i => i.id === over.id)) { targetPeriod = 'weekly'; targetListId = getWeeklyId(selectedDate); }
+                else if (monthlyTodos.some(i => i.id === over.id)) { targetPeriod = 'monthly'; targetListId = getMonthlyId(selectedDate); }
+            }
 
-            const targetId = over.id as string;
+            if (!targetPeriod) return;
 
-            // Source: Month -> Week (Copy)
-            if (activeSourceList === 'monthly' && targetPeriod === 'weekly') {
-                await copyItem(item, 'weekly', targetId);
+            // 2. Perform Action 
+
+            // Reorder (Same Period)
+            if (activeSourceList === targetPeriod) {
+                if (overType === 'todo-item') { // Only reorder if dropped on an item
+                    let sourceList: TodoItem[] = [];
+                    if (activeSourceList === 'daily') sourceList = dailyTodos;
+                    else if (activeSourceList === 'weekly') sourceList = weeklyTodos;
+                    else if (activeSourceList === 'monthly') sourceList = monthlyTodos;
+
+                    const oldIndex = sourceList.findIndex(i => i.id === item.id);
+                    const newIndex = sourceList.findIndex(i => i.id === over.id);
+
+                    if (oldIndex !== newIndex && oldIndex !== -1 && newIndex !== -1) {
+                        const newItems = arrayMove(sourceList, oldIndex, newIndex);
+                        await saveTodoList(user.uid, activeSourceList, targetListId, newItems);
+                    }
+                }
             }
-            // Source: Month -> Day (Copy)
-            else if (activeSourceList === 'monthly' && targetPeriod === 'daily') {
-                await copyItem(item, 'daily', targetId);
+            // Move/Copy (Different Period)
+            else {
+                // Source: Month -> Week (Copy)
+                if (activeSourceList === 'monthly' && targetPeriod === 'weekly') {
+                    await copyItem(item, 'weekly', targetListId);
+                }
+                // Source: Month -> Day (Copy)
+                else if (activeSourceList === 'monthly' && targetPeriod === 'daily') {
+                    await copyItem(item, 'daily', targetListId);
+                }
+                // Source: Week -> Day (Copy)
+                else if (activeSourceList === 'weekly' && targetPeriod === 'daily') {
+                    await copyItem(item, 'daily', targetListId);
+                }
+                // Source: Week -> Month (Copy)
+                else if (activeSourceList === 'weekly' && targetPeriod === 'monthly') {
+                    await copyItem(item, 'monthly', targetListId);
+                }
+                // Source: Day -> Week/Month (Copy)
+                else if (activeSourceList === 'daily' && (targetPeriod === 'weekly' || targetPeriod === 'monthly')) {
+                    await copyItem(item, targetPeriod, targetListId);
+                }
             }
-            // Source: Week -> Day (Copy: "keeps on the droped place as well as the week")
-            else if (activeSourceList === 'weekly' && targetPeriod === 'daily') {
-                await copyItem(item, 'daily', targetId);
-            }
-            // Source: Week -> Month (Copy)
-            else if (activeSourceList === 'weekly' && targetPeriod === 'monthly') {
-                await copyItem(item, 'monthly', targetId);
-            }
-            // Source: Day -> Week/Month? (Not specified, assume copy)
-            else if (activeSourceList === 'daily' && (targetPeriod === 'weekly' || targetPeriod === 'monthly')) {
-                await copyItem(item, targetPeriod, targetId);
-            }
-            // Same list? Do nothing or reorder (not implementing reorder yet)
         }
     };
 
@@ -499,7 +506,7 @@ export default function TodoPage() {
                                         title="This Month"
                                         items={monthlyTodos}
                                         onAdd={(text) => handleAdd(text, 'monthly', monthlyTodos)}
-                                        onToggle={(id, val) => handleToggle(id, val, 'monthly', monthlyTodos)}
+                                        onUpdate={(id, updates) => handleUpdate(id, updates, 'monthly', monthlyTodos)}
                                         onDelete={(id) => handleDelete(id, 'monthly', monthlyTodos)}
                                         onDeleteAll={() => handleDeleteAll('monthly')}
                                         onDeleteCompleted={() => handleDeleteCompleted('monthly', monthlyTodos)}
@@ -514,7 +521,7 @@ export default function TodoPage() {
                                         title="This Week"
                                         items={weeklyTodos}
                                         onAdd={(text) => handleAdd(text, 'weekly', weeklyTodos)}
-                                        onToggle={(id, val) => handleToggle(id, val, 'weekly', weeklyTodos)}
+                                        onUpdate={(id, updates) => handleUpdate(id, updates, 'weekly', weeklyTodos)}
                                         onDelete={(id) => handleDelete(id, 'weekly', weeklyTodos)}
                                         onDeleteAll={() => handleDeleteAll('weekly')}
                                         onDeleteCompleted={() => handleDeleteCompleted('weekly', weeklyTodos)}
@@ -530,7 +537,7 @@ export default function TodoPage() {
                                     title="Today"
                                     items={dailyTodos}
                                     onAdd={(text) => handleAdd(text, 'daily', dailyTodos)}
-                                    onToggle={(id, val) => handleToggle(id, val, 'daily', dailyTodos)}
+                                    onUpdate={(id, updates) => handleUpdate(id, updates, 'daily', dailyTodos)}
                                     onDelete={(id) => handleDelete(id, 'daily', dailyTodos)}
                                     onDeleteAll={() => handleDeleteAll('daily')}
                                     onDeleteCompleted={() => handleDeleteCompleted('daily', dailyTodos)}

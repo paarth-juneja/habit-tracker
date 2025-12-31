@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { TodoItem } from '@/lib/todo';
-import { useDraggable, useDroppable } from '@dnd-kit/core';
+import { useDroppable } from '@dnd-kit/core';
+import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import styles from './TodoList.module.css';
 import DropdownMenu from '../DropdownMenu';
@@ -12,7 +13,7 @@ interface TodoListProps {
     title: string;
     items: TodoItem[];
     onAdd: (text: string) => void;
-    onToggle: (id: string, completed: boolean) => void;
+    onUpdate: (id: string, updates: Partial<TodoItem>) => void;
     onDelete: (id: string) => void;
     onDeleteAll?: () => void;
     onDeleteCompleted?: () => void;
@@ -21,48 +22,158 @@ interface TodoListProps {
     moveActions?: { label: string, onClick: () => void }[];
 }
 
-function DraggableTodoItem({ item, onToggle, onDelete }: {
+function SortableTodoItem({ item, onUpdate, onDelete }: {
     item: TodoItem,
-    onToggle: (id: string, completed: boolean) => void,
+    onUpdate: (id: string, updates: Partial<TodoItem>) => void,
     onDelete: (id: string) => void
 }) {
-    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
         id: item.id,
         data: { item, type: 'todo-item' }
     });
 
     const style = {
         transform: CSS.Translate.toString(transform),
+        transition,
         opacity: isDragging ? 0.5 : 1,
-        touchAction: 'none'
+    };
+
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [newStepText, setNewStepText] = useState('');
+
+    const handleAddStep = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newStepText.trim()) return;
+        const newStep = {
+            id: Date.now().toString(),
+            text: newStepText.trim(),
+            completed: false
+        };
+        onUpdate(item.id, { steps: [...(item.steps || []), newStep] });
+        setNewStepText('');
+    };
+
+    const toggleStep = (stepId: string, completed: boolean) => {
+        const updatedSteps = (item.steps || []).map(s => s.id === stepId ? { ...s, completed } : s);
+        onUpdate(item.id, { steps: updatedSteps });
+    };
+
+    const deleteStep = (stepId: string) => {
+        const updatedSteps = (item.steps || []).filter(s => s.id !== stepId);
+        onUpdate(item.id, { steps: updatedSteps });
     };
 
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            {...listeners}
-            {...attributes}
-            className={`${styles.item} ${item.completed ? styles.completed : ''}`}
-        >
-            <label className={styles.checkboxLabel} onPointerDown={(e) => e.stopPropagation()}>
-                <input
-                    type="checkbox"
-                    checked={item.completed}
-                    onChange={(e) => onToggle(item.id, e.target.checked)}
-                    className={styles.checkbox}
-                />
-                <span className={styles.checkmark}></span>
-            </label>
-            <span className={styles.text}>{item.text}</span>
-            <button
-                onPointerDown={(e) => e.stopPropagation()}
-                onClick={() => onDelete(item.id)}
-                className={styles.deleteBtn}
-                aria-label="Delete task"
-            >
-                ×
-            </button>
+        <div ref={setNodeRef} style={style} className={styles.itemWrapper}>
+            <div className={`${styles.item} ${item.completed ? styles.completed : ''}`}>
+                <div {...attributes} {...listeners} className={styles.dragHandle}>
+                    ⋮⋮
+                </div>
+
+                <label className={styles.checkboxLabel} onPointerDown={(e) => e.stopPropagation()}>
+                    <input
+                        type="checkbox"
+                        checked={item.completed}
+                        onChange={(e) => onUpdate(item.id, { completed: e.target.checked })}
+                        className={styles.checkbox}
+                    />
+                    <span className={styles.checkmark}></span>
+                </label>
+
+                <div className={styles.content}>
+                    <span className={styles.text}>{item.text}</span>
+                    {item.dueDate && (
+                        <div className={styles.dueDateDisplay}>
+                            Due: {new Date(item.dueDate).toLocaleDateString()}
+                        </div>
+                    )}
+                </div>
+
+                <div className={styles.actions}>
+                    <button
+                        className={styles.iconBtn}
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        title="Details"
+                    >
+                        {isExpanded ? '▲' : '▼'}
+                    </button>
+                    <button
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={() => onDelete(item.id)}
+                        className={`${styles.iconBtn} ${styles.deleteBtn}`}
+                        aria-label="Delete task"
+                    >
+                        ×
+                    </button>
+                </div>
+            </div>
+
+            {isExpanded && (
+                <div className={styles.details}>
+                    <div className={styles.detailRow}>
+                        <label>Due Date:</label>
+                        <div className={styles.dateInputWrapper}>
+                            <input
+                                type="date"
+                                value={item.dueDate ? new Date(item.dueDate).toISOString().split('T')[0] : ''}
+                                onChange={(e) => {
+                                    const date = e.target.value ? new Date(e.target.value).getTime() : undefined;
+                                    onUpdate(item.id, { dueDate: date });
+                                }}
+                                className={styles.dateInput}
+                            />
+                            {item.dueDate && (
+                                <button
+                                    type="button"
+                                    onClick={() => onUpdate(item.id, { dueDate: undefined })}
+                                    className={styles.clearDateBtn}
+                                    title="Clear deadline"
+                                >
+                                    ×
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className={styles.stepsSection}>
+                        <div className={styles.stepsLabel}>Steps:</div>
+                        <ul className={styles.stepsList}>
+                            {item.steps?.map(step => (
+                                <li key={step.id} className={styles.stepItem}>
+                                    <input
+                                        type="checkbox"
+                                        checked={step.completed}
+                                        onChange={(e) => toggleStep(step.id, e.target.checked)}
+                                    />
+                                    <span className={step.completed ? styles.stepCompleted : ''}>{step.text}</span>
+                                    <button onClick={() => deleteStep(step.id)} className={styles.stepDelete}>×</button>
+                                </li>
+                            ))}
+                        </ul>
+                        <form onSubmit={handleAddStep} className={styles.stepForm}>
+                            <input
+                                type="text"
+                                value={newStepText}
+                                onChange={(e) => setNewStepText(e.target.value)}
+                                placeholder="Add a step..."
+                                className={styles.stepInput}
+                            />
+                            <button type="submit" className={styles.stepAddBtn}>+</button>
+                        </form>
+                    </div>
+
+                    <div className={styles.detailRow}>
+                        <label>Notes:</label>
+                        <textarea
+                            value={item.notes || ''}
+                            onChange={(e) => onUpdate(item.id, { notes: e.target.value })}
+                            placeholder="Add notes..."
+                            className={styles.notesInput}
+                            rows={3}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
@@ -72,7 +183,7 @@ export default function TodoList({
     title,
     items,
     onAdd,
-    onToggle,
+    onUpdate,
     onDelete,
     onDeleteAll,
     onDeleteCompleted,
@@ -135,17 +246,19 @@ export default function TodoList({
             </form>
 
             <div className={styles.list}>
-                {items.length === 0 && (
-                    <div className={styles.emptyState}>No tasks yet</div>
-                )}
-                {items.map(item => (
-                    <DraggableTodoItem
-                        key={item.id}
-                        item={item}
-                        onToggle={onToggle}
-                        onDelete={onDelete}
-                    />
-                ))}
+                <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
+                    {items.length === 0 && (
+                        <div className={styles.emptyState}>No tasks yet</div>
+                    )}
+                    {items.map(item => (
+                        <SortableTodoItem
+                            key={item.id}
+                            item={item}
+                            onUpdate={onUpdate}
+                            onDelete={onDelete}
+                        />
+                    ))}
+                </SortableContext>
             </div>
         </div>
     );

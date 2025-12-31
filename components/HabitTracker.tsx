@@ -1,6 +1,23 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import {
+    DndContext,
+    closestCenter,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragEndEvent
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+    useSortable
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import styles from './HabitTracker.module.css';
 import YearMonthPicker from './Journal/YearMonthPicker';
 
@@ -31,6 +48,120 @@ function generateId(): string {
     return Math.random().toString(36).substring(2, 11);
 }
 
+// --- Sortable Item Component ---
+
+interface SortableHabitRowProps {
+    habit: Habit;
+    days: number[];
+    isCurrentMonth: boolean;
+    currentDay: number;
+    daysInMonth: number;
+    editingId: string | null;
+    editingName: string;
+    setEditingName: (name: string) => void;
+    handleSaveEdit: () => void;
+    handleStartEdit: (habit: Habit) => void;
+    handleDeleteHabit: (id: string) => void;
+    handleToggleDay: (habitId: string, day: number) => void;
+}
+
+function SortableHabitRow({
+    habit,
+    days,
+    isCurrentMonth,
+    currentDay,
+    daysInMonth,
+    editingId,
+    editingName,
+    setEditingName,
+    handleSaveEdit,
+    handleStartEdit,
+    handleDeleteHabit,
+    handleToggleDay,
+}: SortableHabitRowProps) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id: habit.id });
+
+    const style = {
+        transform: CSS.Translate.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        position: 'relative' as const,
+        zIndex: isDragging ? 999 : 'auto',
+    };
+
+    const getCompletionRate = (habit: Habit): number => {
+        const daysToCount = isCurrentMonth ? currentDay : daysInMonth;
+        return Math.round((habit.completedDays.length / daysToCount) * 100);
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} className={styles.habitRow}>
+            <div className={styles.habitName}>
+                <div {...attributes} {...listeners} className={styles.dragHandle}>
+                    ⋮⋮
+                </div>
+                {editingId === habit.id ? (
+                    <input
+                        type="text"
+                        value={editingName}
+                        onChange={(e) => setEditingName(e.target.value)}
+                        onBlur={handleSaveEdit}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
+                        className={styles.editInput}
+                        autoFocus
+                    />
+                ) : (
+                    <>
+                        <span
+                            className={styles.habitText}
+                            onClick={() => handleStartEdit(habit)}
+                            title="Click to edit"
+                        >
+                            {habit.name}
+                        </span>
+                        <button
+                            onClick={() => handleDeleteHabit(habit.id)}
+                            className={styles.deleteBtn}
+                            title="Delete habit"
+                        >
+                            ×
+                        </button>
+                    </>
+                )}
+            </div>
+            {days.map(day => {
+                const isCompleted = habit.completedDays.includes(day);
+                const isFuture = isCurrentMonth && day > currentDay;
+                return (
+                    <div
+                        key={day}
+                        className={`${styles.dayCell} ${isCurrentMonth && day === currentDay ? styles.todayCell : ''}`}
+                    >
+                        <button
+                            className={`${styles.checkbox} ${isCompleted ? styles.checked : ''} ${isFuture ? styles.future : ''}`}
+                            onClick={() => !isFuture && handleToggleDay(habit.id, day)}
+                            disabled={isFuture}
+                        >
+                            {isCompleted && <span className={styles.checkmark}>✓</span>}
+                        </button>
+                    </div>
+                );
+            })}
+            <div className={styles.progressCell}>
+                <span className={styles.progressValue}>{getCompletionRate(habit)}%</span>
+            </div>
+        </div>
+    );
+}
+
+
 export default function HabitTracker({
     habits,
     year,
@@ -42,6 +173,17 @@ export default function HabitTracker({
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editingName, setEditingName] = useState('');
     const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     const daysInMonth = getDaysInMonth(year, month);
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -110,9 +252,17 @@ export default function HabitTracker({
         setEditingName('');
     };
 
-    const getCompletionRate = (habit: Habit): number => {
-        const daysToCount = isCurrentMonth ? currentDay : daysInMonth;
-        return Math.round((habit.completedDays.length / daysToCount) * 100);
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+
+        if (active.id !== over?.id) {
+            const oldIndex = habits.findIndex((h) => h.id === active.id);
+            const newIndex = habits.findIndex((h) => h.id === over?.id);
+
+            if (oldIndex !== -1 && newIndex !== -1) {
+                onHabitsChange(arrayMove(habits, oldIndex, newIndex));
+            }
+        }
     };
 
     return (
@@ -168,62 +318,35 @@ export default function HabitTracker({
                         <div className={styles.progressHeader}>%</div>
                     </div>
 
-                    {/* Habit Rows */}
-                    {habits.map(habit => (
-                        <div key={habit.id} className={styles.habitRow}>
-                            <div className={styles.habitName}>
-                                {editingId === habit.id ? (
-                                    <input
-                                        type="text"
-                                        value={editingName}
-                                        onChange={(e) => setEditingName(e.target.value)}
-                                        onBlur={handleSaveEdit}
-                                        onKeyDown={(e) => e.key === 'Enter' && handleSaveEdit()}
-                                        className={styles.editInput}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <>
-                                        <span
-                                            className={styles.habitText}
-                                            onClick={() => handleStartEdit(habit)}
-                                            title="Click to edit"
-                                        >
-                                            {habit.name}
-                                        </span>
-                                        <button
-                                            onClick={() => handleDeleteHabit(habit.id)}
-                                            className={styles.deleteBtn}
-                                            title="Delete habit"
-                                        >
-                                            ×
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                            {days.map(day => {
-                                const isCompleted = habit.completedDays.includes(day);
-                                const isFuture = isCurrentMonth && day > currentDay;
-                                return (
-                                    <div
-                                        key={day}
-                                        className={`${styles.dayCell} ${isCurrentMonth && day === currentDay ? styles.todayCell : ''}`}
-                                    >
-                                        <button
-                                            className={`${styles.checkbox} ${isCompleted ? styles.checked : ''} ${isFuture ? styles.future : ''}`}
-                                            onClick={() => !isFuture && handleToggleDay(habit.id, day)}
-                                            disabled={isFuture}
-                                        >
-                                            {isCompleted && <span className={styles.checkmark}>✓</span>}
-                                        </button>
-                                    </div>
-                                );
-                            })}
-                            <div className={styles.progressCell}>
-                                <span className={styles.progressValue}>{getCompletionRate(habit)}%</span>
-                            </div>
-                        </div>
-                    ))}
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <SortableContext
+                            items={habits.map(h => h.id)}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {/* Habit Rows */}
+                            {habits.map(habit => (
+                                <SortableHabitRow
+                                    key={habit.id}
+                                    habit={habit}
+                                    days={days}
+                                    isCurrentMonth={isCurrentMonth}
+                                    currentDay={currentDay}
+                                    daysInMonth={daysInMonth}
+                                    editingId={editingId}
+                                    editingName={editingName}
+                                    setEditingName={setEditingName}
+                                    handleSaveEdit={handleSaveEdit}
+                                    handleStartEdit={handleStartEdit}
+                                    handleDeleteHabit={handleDeleteHabit}
+                                    handleToggleDay={handleToggleDay}
+                                />
+                            ))}
+                        </SortableContext>
+                    </DndContext>
 
                     {/* Add New Habit Row */}
                     <div className={styles.addRow}>

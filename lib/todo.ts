@@ -9,6 +9,9 @@ export interface TodoItem {
     text: string;
     completed: boolean;
     createdAt: number;
+    dueDate?: number;
+    notes?: string;
+    steps?: { id: string; text: string; completed: boolean; }[];
 }
 
 export interface TodoList {
@@ -52,9 +55,25 @@ export const getTodoList = async (userId: string, period: TodoPeriod, periodId: 
     return [];
 };
 
+// Helper to remove undefined values from TodoItem (Firebase doesn't support undefined)
+const cleanTodoItem = (item: TodoItem): Partial<TodoItem> & Pick<TodoItem, 'id' | 'text' | 'completed' | 'createdAt'> => {
+    const cleaned: Partial<TodoItem> & Pick<TodoItem, 'id' | 'text' | 'completed' | 'createdAt'> = {
+        id: item.id,
+        text: item.text,
+        completed: item.completed,
+        createdAt: item.createdAt,
+    };
+    if (item.dueDate !== undefined) cleaned.dueDate = item.dueDate;
+    if (item.notes !== undefined) cleaned.notes = item.notes;
+    if (item.steps !== undefined) cleaned.steps = item.steps;
+    return cleaned;
+};
+
 export const saveTodoList = async (userId: string, period: TodoPeriod, periodId: string, items: TodoItem[]) => {
     const docRef = doc(db, `users/${userId}/todos_${period}/${periodId}`);
-    await setDoc(docRef, { items }, { merge: true });
+    // Clean items to remove undefined values before saving
+    const cleanedItems = items.map(cleanTodoItem);
+    await setDoc(docRef, { items: cleanedItems }, { merge: true });
 };
 
 // Subscription for real-time updates
