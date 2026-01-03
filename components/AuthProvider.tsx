@@ -13,6 +13,7 @@ import {
     setLastKnownUid,
     hasUserSwitched,
     clearUserLocalStorage,
+    warmCache,
 } from '@/lib/cacheManager';
 import { clearLegacyEmailCache } from '@/lib/localStorage';
 
@@ -77,6 +78,9 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
                 previousUidRef.current = currentUid;
                 setLastKnownUid(currentUid);
                 setUser(firebaseUser);
+
+                // Warm cache for quick access to common data
+                warmCache(currentUid);
             } else {
                 // User is signed out
                 // Clear any remaining user cache to prevent data leakage

@@ -1,6 +1,7 @@
 
 import { db } from './firebase';
 import { doc, getDoc, setDoc, onSnapshot, collection, query, where, getDocs, documentId } from 'firebase/firestore';
+import { cache, buildTodoCacheKey, buildEntryDatesCacheKey, CacheTTL } from './cacheService';
 
 export type TodoPeriod = 'daily' | 'weekly' | 'monthly';
 
@@ -46,13 +47,36 @@ export const getMonthlyId = (date: Date): string => {
     return `${y}-${m}`;
 };
 
-export const getTodoList = async (userId: string, period: TodoPeriod, periodId: string): Promise<TodoItem[]> => {
-    const docRef = doc(db, `users/${userId}/todos_${period}/${periodId}`);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-        return docSnap.data().items as TodoItem[];
+// Get TTL based on period type
+const getPeriodTTL = (period: TodoPeriod): number => {
+    switch (period) {
+        case 'daily': return CacheTTL.TODOS_DAILY;
+        case 'weekly': return CacheTTL.TODOS_WEEKLY;
+        case 'monthly': return CacheTTL.TODOS_MONTHLY;
+        default: return CacheTTL.TODOS_DAILY;
     }
-    return [];
+};
+
+export const getTodoList = async (userId: string, period: TodoPeriod, periodId: string): Promise<TodoItem[]> => {
+    const cacheKey = buildTodoCacheKey(userId, period, periodId);
+
+    return cache.getOrFetch(
+        cacheKey,
+        async () => {
+            const docRef = doc(db, `users/${userId}/todos_${period}/${periodId}`);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                return docSnap.data().items as TodoItem[];
+            }
+            return [];
+        },
+        {
+            ttl: getPeriodTTL(period),
+            useStorage: true,
+            staleWhileRevalidate: true,
+            tags: [`todo:${userId}`, `period:${period}`]
+        }
+    );
 };
 
 // Helper to remove undefined values from TodoItem (Firebase doesn't support undefined)
@@ -74,47 +98,85 @@ export const saveTodoList = async (userId: string, period: TodoPeriod, periodId:
     // Clean items to remove undefined values before saving
     const cleanedItems = items.map(cleanTodoItem);
     await setDoc(docRef, { items: cleanedItems }, { merge: true });
+
+    // Update cache with the new data (optimistic update)
+    const cacheKey = buildTodoCacheKey(userId, period, periodId);
+    cache.set(cacheKey, items, {
+        ttl: getPeriodTTL(period),
+        useStorage: true,
+        tags: [`todo:${userId}`, `period:${period}`]
+    });
+
+    // Invalidate entry dates cache if daily todo was modified
+    if (period === 'daily') {
+        // Extract year-month from periodId (format: YYYY-MM-DD)
+        const [year, month] = periodId.split('-').map(Number);
+        const entryDatesKey = buildEntryDatesCacheKey(userId, year, month);
+        cache.invalidate(entryDatesKey);
+    }
 };
 
-// Subscription for real-time updates
+// Subscription for real-time updates - also updates cache
 export const subscribeTodoList = (userId: string, period: TodoPeriod, periodId: string, callback: (items: TodoItem[]) => void) => {
     const docRef = doc(db, `users/${userId}/todos_${period}/${periodId}`);
+    const cacheKey = buildTodoCacheKey(userId, period, periodId);
+
     return onSnapshot(docRef, (docSnap) => {
+        let items: TodoItem[] = [];
         if (docSnap.exists()) {
-            callback(docSnap.data().items as TodoItem[]);
-        } else {
-            callback([]);
+            items = docSnap.data().items as TodoItem[];
         }
+
+        // Update cache with real-time data
+        cache.set(cacheKey, items, {
+            ttl: getPeriodTTL(period),
+            useStorage: true,
+            tags: [`todo:${userId}`, `period:${period}`]
+        });
+
+        callback(items);
     });
 };
 
 export const getTodoDatesForMonth = async (userId: string, date: Date): Promise<string[]> => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
+    const cacheKey = buildEntryDatesCacheKey(userId, year, month);
 
-    const startId = `${year}-${String(month).padStart(2, '0')}-01`;
-    // End ID is start of next month
-    // Handle Dec -> Jan
-    const nextMonthDate = new Date(year, month, 1); // month is 0-indexed in Date constructor (0-11), so 'month' (1-12) works as next month
-    const nextYear = nextMonthDate.getFullYear();
-    const nextMonth = nextMonthDate.getMonth() + 1;
-    const endId = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
+    return cache.getOrFetch(
+        cacheKey,
+        async () => {
+            const startId = `${year}-${String(month).padStart(2, '0')}-01`;
+            // End ID is start of next month
+            // Handle Dec -> Jan
+            const nextMonthDate = new Date(year, month, 1); // month is 0-indexed in Date constructor (0-11), so 'month' (1-12) works as next month
+            const nextYear = nextMonthDate.getFullYear();
+            const nextMonth = nextMonthDate.getMonth() + 1;
+            const endId = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`;
 
-    const q = query(
-        collection(db, `users/${userId}/todos_daily`),
-        where(documentId(), '>=', startId),
-        where(documentId(), '<', endId)
-    );
+            const q = query(
+                collection(db, `users/${userId}/todos_daily`),
+                where(documentId(), '>=', startId),
+                where(documentId(), '<', endId)
+            );
 
-    const snapshot = await getDocs(q);
-    const dates: string[] = [];
+            const snapshot = await getDocs(q);
+            const dates: string[] = [];
 
-    snapshot.forEach(doc => {
-        const data = doc.data();
-        if (data.items && Array.isArray(data.items) && data.items.length > 0) {
-            dates.push(doc.id);
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.items && Array.isArray(data.items) && data.items.length > 0) {
+                    dates.push(doc.id);
+                }
+            });
+
+            return dates;
+        },
+        {
+            ttl: CacheTTL.ENTRY_DATES,
+            useStorage: true,
+            staleWhileRevalidate: true,
+            tags: [`entryDates:${userId}`]
         }
-    });
-
-    return dates;
+    );
 };

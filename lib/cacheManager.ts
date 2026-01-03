@@ -3,7 +3,13 @@
  * 
  * Provides centralized cache management to ensure cached data
  * never interferes with authentication flows.
+ * 
+ * Also integrates with CacheService for application-level caching.
  */
+
+import { cache, buildGoalsCacheKey, buildHabitsCacheKey, CacheTTL } from './cacheService';
+import { db } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 // Cache key prefixes
 const CACHE_PREFIX = 'habit-tracker';
@@ -14,6 +20,13 @@ const AUTH_CACHE_KEYS = ['firebase:authUser', 'firebase:host'];
  */
 export function clearUserLocalStorage(uid?: string): void {
     if (typeof window === 'undefined') return;
+
+    // Also clear in-memory cache
+    if (uid) {
+        cache.invalidateByUser(uid);
+    } else {
+        cache.clearAll();
+    }
 
     const keysToRemove: string[] = [];
 
@@ -258,3 +271,42 @@ export function hasUserSwitched(currentUid: string): boolean {
     const lastUid = getLastKnownUid();
     return lastUid !== null && lastUid !== currentUid;
 }
+
+/**
+ * Warm cache with commonly accessed data for a user
+ * Call this after successful authentication
+ */
+export async function warmCache(uid: string): Promise<void> {
+    console.log('[CacheManager] Warming cache for user:', uid);
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    try {
+        // Prefetch goals
+        const goalsKey = buildGoalsCacheKey(uid);
+        cache.prefetch(goalsKey, async () => {
+            const goalsRef = doc(db, 'users', uid, 'goals', 'current');
+            const snap = await getDoc(goalsRef);
+            return snap.exists() ? snap.data() : null;
+        }, { ttl: CacheTTL.GOALS, useStorage: true, tags: [`user:${uid}`] });
+
+        // Prefetch current month habits
+        const habitsKey = buildHabitsCacheKey(uid, currentYear, currentMonth);
+        cache.prefetch(habitsKey, async () => {
+            const habitsRef = doc(db, 'users', uid, 'habits', `${currentYear}-${currentMonth}`);
+            const snap = await getDoc(habitsRef);
+            return snap.exists() ? snap.data()?.list || [] : [];
+        }, { ttl: CacheTTL.HABITS, useStorage: true, tags: [`user:${uid}`] });
+
+        console.log('[CacheManager] Cache warming initiated');
+    } catch (error) {
+        console.warn('[CacheManager] Cache warming failed:', error);
+    }
+}
+
+/**
+ * Export the cache instance for direct access if needed
+ */
+export { cache } from './cacheService';
