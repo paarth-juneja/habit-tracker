@@ -40,6 +40,23 @@ function SortableTodoItem({ item, onUpdate, onDelete }: {
 
     const [isExpanded, setIsExpanded] = useState(false);
     const [newStepText, setNewStepText] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingText, setEditingText] = useState(item.text);
+
+    const handleSaveEdit = () => {
+        if (editingText.trim()) {
+            onUpdate(item.id, { text: editingText.trim() });
+        } else {
+            setEditingText(item.text); // Revert if empty
+        }
+        setIsEditing(false);
+    };
+
+    const handleStartEdit = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent expanding when clicking to edit
+        setIsEditing(true);
+        setEditingText(item.text);
+    };
 
     const handleAddStep = (e: React.FormEvent) => {
         e.preventDefault();
@@ -65,12 +82,16 @@ function SortableTodoItem({ item, onUpdate, onDelete }: {
 
     return (
         <div ref={setNodeRef} style={style} className={styles.itemWrapper}>
-            <div className={`${styles.item} ${item.completed ? styles.completed : ''}`}>
+            <div
+                className={`${styles.item} ${item.completed ? styles.completed : ''}`}
+                onClick={() => setIsExpanded(!isExpanded)}
+                style={{ cursor: 'pointer' }}
+            >
                 <div {...attributes} {...listeners} className={styles.dragHandle}>
                     ⋮⋮
                 </div>
 
-                <label className={styles.checkboxLabel} onPointerDown={(e) => e.stopPropagation()}>
+                <label className={styles.checkboxLabel} onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
                     <input
                         type="checkbox"
                         checked={item.completed}
@@ -81,7 +102,32 @@ function SortableTodoItem({ item, onUpdate, onDelete }: {
                 </label>
 
                 <div className={styles.content}>
-                    <span className={styles.text}>{item.text}</span>
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            onBlur={handleSaveEdit}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleSaveEdit();
+                                if (e.key === 'Escape') {
+                                    setEditingText(item.text);
+                                    setIsEditing(false);
+                                }
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className={styles.inlineEditInput}
+                            autoFocus
+                        />
+                    ) : (
+                        <span
+                            className={styles.text}
+                            onClick={handleStartEdit}
+                            title="Click to edit"
+                        >
+                            {item.text}
+                        </span>
+                    )}
                     {item.dueDate && (
                         <div className={styles.dueDateDisplay}>
                             Due: {new Date(item.dueDate).toLocaleDateString()}
@@ -91,15 +137,8 @@ function SortableTodoItem({ item, onUpdate, onDelete }: {
 
                 <div className={styles.actions}>
                     <button
-                        className={styles.iconBtn}
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        title="Details"
-                    >
-                        {isExpanded ? '▲' : '▼'}
-                    </button>
-                    <button
                         onPointerDown={(e) => e.stopPropagation()}
-                        onClick={() => onDelete(item.id)}
+                        onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
                         className={`${styles.iconBtn} ${styles.deleteBtn}`}
                         aria-label="Delete task"
                     >

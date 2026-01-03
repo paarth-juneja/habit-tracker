@@ -399,3 +399,61 @@
         opacity: 1;
     }
 }
+
+.expandHint {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-left: auto;
+    padding-left: 0.5rem;
+    transition: color 0.2s;
+}
+
+.content:hover .expandHint {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.taskNameInput {
+    width: 100%;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.taskNameInput:focus {
+    outline: none;
+    border-color: rgba(167, 139, 250, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+}
+
+.inlineEditInput {
+    flex: 1;
+    padding: 0.25rem 0.5rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    border-radius: 4px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.15);
+}
+
+.inlineEditInput:focus {
+    border-color: rgba(167, 139, 250, 0.6);
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+}
+
+.text {
+    cursor: text;
+    transition: color 0.2s;
+}
+
+.text:hover {
+    color: rgba(167, 139, 250, 0.9);
+}
