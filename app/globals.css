@@ -29,13 +29,14 @@ body {
     overflow-x: hidden;
 }
 
-/* Ultra smooth scrolling */
+/* Optimized smooth scrolling - use auto for better frame rates during manual scroll */
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
 }
 
-@supports (scroll-behavior: smooth) {
-    html {
+/* Only enable smooth scrolling for programmatic navigation (anchor links) */
+@media (prefers-reduced-motion: no-preference) {
+    html:focus-within {
         scroll-behavior: smooth;
     }
 }
@@ -75,7 +76,7 @@ button {
     transition: outline-offset var(--transition-fast);
 }
 
-/* Enhanced Scrollbar with smooth behavior */
+/* Enhanced Scrollbar - optimized for performance */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -89,7 +90,7 @@ button {
 ::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 5px;
-    transition: background 0.3s ease;
+    /* Avoid transition on scrollbar for better performance */
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -100,7 +101,7 @@ button {
     background: rgba(167, 139, 250, 0.4);
 }
 
-/* Firefox smooth scrolling */
+/* Firefox scrollbar */
 * {
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
@@ -116,6 +117,7 @@ button {
         opacity: 0;
         transform: translateY(12px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -126,6 +128,7 @@ button {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -137,6 +140,7 @@ button {
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -148,6 +152,7 @@ button {
         opacity: 0;
         transform: translateX(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -159,6 +164,7 @@ button {
         opacity: 0;
         transform: scale(0.95);
     }
+
     to {
         opacity: 1;
         transform: scale(1);
@@ -169,6 +175,7 @@ button {
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
@@ -176,9 +183,12 @@ button {
 
 /* Smooth glow pulse animation */
 @keyframes glowPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         box-shadow: 0 0 0 0 rgba(167, 139, 250, 0);
     }
+
     50% {
         box-shadow: 0 0 20px 2px rgba(167, 139, 250, 0.15);
     }
@@ -205,12 +215,29 @@ button {
 }
 
 /* Stagger delays for lists */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
+.stagger-1 {
+    animation-delay: 0.05s;
+}
+
+.stagger-2 {
+    animation-delay: 0.1s;
+}
+
+.stagger-3 {
+    animation-delay: 0.15s;
+}
+
+.stagger-4 {
+    animation-delay: 0.2s;
+}
+
+.stagger-5 {
+    animation-delay: 0.25s;
+}
+
+.stagger-6 {
+    animation-delay: 0.3s;
+}
 
 /* ======================================
    GLOBAL SMOOTH TRANSITIONS
@@ -220,7 +247,7 @@ button {
 input,
 textarea,
 select {
-    transition: 
+    transition:
         border-color var(--transition-normal),
         box-shadow var(--transition-normal),
         background-color var(--transition-normal),
@@ -233,7 +260,7 @@ select {
 [class*="container"],
 [class*="wrapper"],
 [class*="Wrapper"] {
-    transition: 
+    transition:
         transform var(--transition-normal),
         box-shadow var(--transition-normal),
         border-color var(--transition-normal),
@@ -247,7 +274,7 @@ select {
 [class*="Dropdown"],
 [class*="menu"],
 [class*="Menu"] {
-    transition: 
+    transition:
         opacity var(--transition-normal),
         transform var(--transition-normal),
         visibility var(--transition-normal);
@@ -260,7 +287,7 @@ select {
 [class*="Btn"],
 [class*="button"],
 [class*="Button"] {
-    transition: 
+    transition:
         transform var(--transition-fast),
         color var(--transition-fast),
         background-color var(--transition-normal),
@@ -273,12 +300,22 @@ select {
    SMOOTH SCROLL CONTAINERS
    ====================================== */
 
-/* Apply momentum scrolling to scrollable areas */
+/* Apply momentum scrolling with GPU acceleration */
 [class*="scroll"],
 [class*="Scroll"],
 [class*="overflow"] {
     -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
+}
+
+/* GPU acceleration hints for scrollable containers */
+[style*="overflow"],
+.list,
+.scrollable {
+    will-change: scroll-position;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 /* ======================================
@@ -286,6 +323,7 @@ select {
    ====================================== */
 
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {

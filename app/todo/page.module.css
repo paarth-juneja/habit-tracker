@@ -32,6 +32,11 @@
     gap: 1.5rem;
     border: 1px solid rgba(255, 255, 255, 0.05);
     overflow-y: auto;
+    /* GPU acceleration for smooth scrolling */
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 /* Main Content: Split into Month/Week col and Today col */

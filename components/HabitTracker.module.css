@@ -69,10 +69,20 @@
     border-radius: 16px;
     padding: 1.5rem;
     overflow-x: auto;
+    /* GPU acceleration for smooth scrolling */
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    /* Optimize rendering */
+    contain: layout style;
 }
 
 .tracker {
     min-width: max-content;
+    /* Promote to its own layer */
+    transform: translateZ(0);
 }
 
 .headerRow {

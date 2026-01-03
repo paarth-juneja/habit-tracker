@@ -56,8 +56,14 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    /* GPU acceleration for smooth scrolling */
+    will-change: scroll-position;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    /* Optimize rendering */
+    contain: layout style;
 }
 
 .itemWrapper {
