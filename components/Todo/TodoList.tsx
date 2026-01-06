@@ -42,6 +42,8 @@ function SortableTodoItem({ item, onUpdate, onDelete }: {
     const [newStepText, setNewStepText] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [editingText, setEditingText] = useState(item.text);
+    const [editingStepId, setEditingStepId] = useState<string | null>(null);
+    const [editingStepText, setEditingStepText] = useState('');
 
     const handleSaveEdit = () => {
         if (editingText.trim()) {
@@ -78,6 +80,24 @@ function SortableTodoItem({ item, onUpdate, onDelete }: {
     const deleteStep = (stepId: string) => {
         const updatedSteps = (item.steps || []).filter(s => s.id !== stepId);
         onUpdate(item.id, { steps: updatedSteps });
+    };
+
+    const updateStep = (stepId: string, newText: string) => {
+        const updatedSteps = (item.steps || []).map(s => s.id === stepId ? { ...s, text: newText } : s);
+        onUpdate(item.id, { steps: updatedSteps });
+    };
+
+    const handleStartStepEdit = (stepId: string, currentText: string) => {
+        setEditingStepId(stepId);
+        setEditingStepText(currentText);
+    };
+
+    const handleSaveStepEdit = (stepId: string) => {
+        if (editingStepText.trim()) {
+            updateStep(stepId, editingStepText.trim());
+        }
+        setEditingStepId(null);
+        setEditingStepText('');
     };
 
     return (
@@ -184,7 +204,31 @@ function SortableTodoItem({ item, onUpdate, onDelete }: {
                                         checked={step.completed}
                                         onChange={(e) => toggleStep(step.id, e.target.checked)}
                                     />
-                                    <span className={step.completed ? styles.stepCompleted : ''}>{step.text}</span>
+                                    {editingStepId === step.id ? (
+                                        <input
+                                            type="text"
+                                            value={editingStepText}
+                                            onChange={(e) => setEditingStepText(e.target.value)}
+                                            onBlur={() => handleSaveStepEdit(step.id)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') handleSaveStepEdit(step.id);
+                                                if (e.key === 'Escape') {
+                                                    setEditingStepId(null);
+                                                    setEditingStepText('');
+                                                }
+                                            }}
+                                            className={styles.stepEditInput}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        <span
+                                            className={`${styles.stepText} ${step.completed ? styles.stepCompleted : ''}`}
+                                            onClick={() => handleStartStepEdit(step.id, step.text)}
+                                            title="Click to edit"
+                                        >
+                                            {step.text}
+                                        </span>
+                                    )}
                                     <button onClick={() => deleteStep(step.id)} className={styles.stepDelete}>×</button>
                                 </li>
                             ))}

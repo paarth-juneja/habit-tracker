@@ -525,7 +525,7 @@ export default function TodoPage() {
                                 <div className={styles.sectionWeek}>
                                     <TodoList
                                         id={getWeeklyId(selectedDate)}
-                                        title="This Week"
+                                        title="To Remember"
                                         items={weeklyTodos}
                                         onAdd={(text) => handleAdd(text, 'weekly', weeklyTodos)}
                                         onUpdate={(id, updates) => handleUpdate(id, updates, 'weekly', weeklyTodos)}

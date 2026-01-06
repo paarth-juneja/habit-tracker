@@ -21,7 +21,7 @@ interface GoalGridProps {
 // Long-term goals are in the LongTermGoalsDropdown
 const goalConfig = [
     { key: 'oneMonth' as const, title: 'This Month Goal', subtitle: 'This Month', color: '#3b82f6' },
-    { key: 'weekly' as const, title: 'This Week', subtitle: 'Weekly', color: '#a855f7' },
+    { key: 'weekly' as const, title: 'To Remember', subtitle: '', color: '#a855f7' },
 ];
 
 export default function GoalGrid({ goals, onGoalChange }: GoalGridProps) {

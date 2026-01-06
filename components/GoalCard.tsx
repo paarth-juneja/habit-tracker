@@ -42,7 +42,7 @@ export default function GoalCard({ title, subtitle, value, onChange, accentColor
                     onChange={(e) => setLocalValue(e.target.value)}
                     onFocus={() => setIsEditing(true)}
                     onBlur={handleBlur}
-                    placeholder={`What do you want to achieve in ${subtitle.toLowerCase()}?`}
+                    placeholder={subtitle ? `What do you want to achieve in ${subtitle.toLowerCase()}?` : 'What do you want to keep in mind?'}
                     rows={4}
                 />
                 {isEditing && (
