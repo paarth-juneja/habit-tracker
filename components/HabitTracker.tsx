@@ -21,11 +21,13 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import styles from './HabitTracker.module.css';
 import YearMonthPicker from './Journal/YearMonthPicker';
+import HabitCompletionGraph from './HabitCompletionGraph';
 
 interface Habit {
     id: string;
     name: string;
     completedDays: number[];
+    createdAt?: number;
 }
 
 interface HabitTrackerProps {
@@ -242,6 +244,7 @@ export default function HabitTracker({
                 id: generateId(),
                 name: newHabitName.trim(),
                 completedDays: [],
+                createdAt: Date.now(),
             };
             onHabitsChange([...habits, newHabit]);
             setNewHabitName('');
@@ -395,6 +398,12 @@ export default function HabitTracker({
                             )}
                         </div>
                     </div>
+
+                    <HabitCompletionGraph
+                        habits={habits}
+                        year={year}
+                        month={month}
+                    />
                 </div>
             </div>
 

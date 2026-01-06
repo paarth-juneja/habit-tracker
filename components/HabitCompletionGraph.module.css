@@ -1,0 +1,93 @@
+.container {
+    padding: 0;
+    margin: 0 -0.5rem;
+    /* Align with existing negative margins */
+    margin-top: 1rem;
+    position: relative;
+    /* No background/border initially to blend in, or minimal */
+}
+
+/* 
+   Important: Since we are putting this INSIDE the scrollable .tracker, 
+   we generally don't want overflow:hidden on the container if the tooltip needs to pop out.
+   But tooltips are absolute positioned.
+*/
+
+.svg {
+    display: block;
+    overflow: visible;
+}
+
+.gridLine {
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-width: 1;
+}
+
+.axisLine {
+    stroke: rgba(255, 255, 255, 0.1);
+    stroke-width: 1;
+}
+
+.axisLabel {
+    fill: rgba(255, 255, 255, 0.4);
+    font-size: 0.75rem;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+.linePath {
+    fill: none;
+    stroke: #ffffff;
+    /* White line as requested */
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    transition: d 0.3s ease;
+}
+
+.tooltip {
+    position: absolute;
+    background: rgba(30, 30, 40, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: #fff;
+    pointer-events: none;
+    transform: translate(-50%, -100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 50;
+    /* Higher than habit rows */
+    white-space: nowrap;
+}
+
+.tooltipDate {
+    display: block;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+}
+
+.tooltipValue {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.point {
+    fill: #1e1e2e;
+    stroke: #ffffff;
+    stroke-width: 2;
+    r: 3;
+    opacity: 0;
+    transition: opacity 0.2s, r 0.2s;
+    cursor: crosshair;
+}
+
+.point:hover,
+.point.active {
+    opacity: 1;
+    r: 5;
+    fill: #ffffff;
+    stroke: #1e1e2e;
+}
