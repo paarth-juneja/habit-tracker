@@ -102,12 +102,34 @@ function SortableHabitRow({
         return Math.round((habit.completedDays.length / daysToCount) * 100);
     };
 
+    const getCompletedCount = (habit: Habit): number => {
+        return habit.completedDays.length;
+    };
+
+    const getTotalDays = (): number => {
+        return isCurrentMonth ? currentDay : daysInMonth;
+    };
+
     return (
         <div ref={setNodeRef} style={style} className={styles.habitRow}>
+            {/* Drag Handle */}
+            <div {...attributes} {...listeners} className={styles.dragHandle}>
+                ⋮⋮
+            </div>
+            {/* Liquid Sphere Progress Indicator */}
+            <div className={styles.liquidSphere}>
+                <div
+                    className={styles.liquidFill}
+                    style={{
+                        height: `${getCompletionRate(habit)}%`,
+                        animationDelay: `-${(habit.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % 50) / 10}s`
+                    }}
+                />
+                <span className={styles.sphereText}>
+                    {getCompletedCount(habit)}/{getTotalDays()}
+                </span>
+            </div>
             <div className={styles.habitName}>
-                <div {...attributes} {...listeners} className={styles.dragHandle}>
-                    ⋮⋮
-                </div>
                 {editingId === habit.id ? (
                     <input
                         type="text"
