@@ -1,0 +1,364 @@
+.container {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+    min-height: calc(100vh - 80px);
+    /* Adjust based on header height */
+}
+
+/* Sidebar / Backlog */
+.sidebar {
+    background: var(--color-surface);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: sticky;
+    top: 2rem;
+    height: calc(100vh - 4rem);
+    overflow-y: auto;
+}
+
+.yearSelector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.yearSelectInput {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: var(--color-text);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.yearSelectInput:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+.backlogHeader {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.addSkillForm {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.skillInput {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    color: var(--color-text);
+    font-size: 0.9rem;
+}
+
+.skillInput:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+.addButton {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 1rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.addButton:hover {
+    background: var(--color-primary-dark);
+}
+
+.skillsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.draggableSkill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: grab;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.draggableSkill:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+}
+
+.deleteBtn {
+    opacity: 0;
+    background: none;
+    border: none;
+    color: var(--color-danger);
+    cursor: pointer;
+    padding: 4px;
+    transition: opacity 0.2s;
+}
+
+.draggableSkill:hover .deleteBtn {
+    opacity: 1;
+}
+
+.skillName {
+    flex: 1;
+    cursor: grab;
+}
+
+.skillActions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.editBtn {
+    opacity: 0;
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.editBtn:hover {
+    background: rgba(167, 139, 250, 0.2);
+}
+
+.draggableSkill:hover .editBtn {
+    opacity: 1;
+}
+
+.editInput {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--color-primary);
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: var(--color-text);
+    font-size: 0.9rem;
+}
+
+/* Main Content / Grid */
+.mainContent {
+    background: var(--color-surface);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.pageHeader {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.todayBox {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    background: rgba(167, 139, 250, 0.15);
+    border: 1px solid var(--color-primary);
+    border-radius: 12px;
+    padding: 0.75rem 1.25rem;
+}
+
+.todayDate {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.todayDay {
+    font-size: 0.85rem;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.gridHeader {
+    display: grid;
+    grid-template-columns: 150px 200px 1fr 100px 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.weekRow {
+    display: grid;
+    grid-template-columns: 150px 200px 1fr 100px 1fr;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.weekRow:last-child {
+    border-bottom: none;
+}
+
+.weekRow:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.weekInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.weekNumber {
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.dateRange {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+/* Droppable Area */
+.skillCell {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s;
+}
+
+.skillCellActive {
+    border-color: var(--color-primary);
+    background: rgba(167, 139, 250, 0.1);
+}
+
+.assignedSkill {
+    background: rgba(167, 139, 250, 0.2);
+    border: 1px solid var(--color-primary);
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-weight: 500;
+}
+
+/* Inputs */
+.tableInput {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: var(--color-text);
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.tableInput:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.tableInput:focus {
+    background: rgba(0, 0, 0, 0.2);
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+.satisfactionInput {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+.cellInput {
+    background: transparent;
+    border: none;
+    width: 100%;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    padding: 0.5rem;
+    text-align: center;
+}
+
+.cellInput:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+@media (max-width: 1024px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+        height: auto;
+        max-height: 400px;
+    }
+
+    .gridHeader,
+    .weekRow {
+        grid-template-columns: 100px 1fr;
+        /* Simplified mobile layout - consider valid alternatives or horizontal scroll */
+        /* For now let's keep it simple, maybe stack them? */
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

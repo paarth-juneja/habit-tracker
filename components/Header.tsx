@@ -61,6 +61,12 @@ export default function Header() {
                             >
                                 Journal
                             </button>
+                            <button
+                                onClick={() => router.push('/skills')}
+                                className={styles.navBtn}
+                            >
+                                Skills
+                            </button>
                         </nav>
                         <button
                             onClick={() => router.push('/profile')}
