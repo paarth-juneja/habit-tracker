@@ -11,9 +11,10 @@ export interface DropdownItem {
 
 interface DropdownMenuProps {
     items: (DropdownItem | 'divider')[];
+    trigger?: React.ReactNode;
 }
 
-export default function DropdownMenu({ items }: DropdownMenuProps) {
+export default function DropdownMenu({ items, trigger }: DropdownMenuProps) {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
@@ -37,7 +38,7 @@ export default function DropdownMenu({ items }: DropdownMenuProps) {
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="More options"
             >
-                ⋮
+                {trigger || '⋮'}
             </button>
 
             {isOpen && (

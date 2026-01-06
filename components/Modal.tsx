@@ -10,10 +10,20 @@ interface ModalProps {
     children: React.ReactNode;
 }
 
-export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
-    if (!isOpen) return null;
+import { createPortal } from 'react-dom';
+import { useEffect, useState } from 'react';
 
-    return (
+export default function Modal({ isOpen, onClose, title, children }: ModalProps) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        return () => setMounted(false);
+    }, []);
+
+    if (!isOpen || !mounted) return null;
+
+    return createPortal(
         <div className={styles.overlay}>
             <div className={styles.modal}>
                 <div className={styles.header}>
@@ -24,6 +34,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
                     {children}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
