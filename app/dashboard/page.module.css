@@ -40,11 +40,18 @@
 }
 
 .headerSection {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: flex-start;
     margin-bottom: 2rem;
     gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .headerSection {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }
 
 .welcomeRow {

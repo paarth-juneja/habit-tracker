@@ -317,12 +317,34 @@
 
 .satisfactionInput {
     width: 100%;
-    background: rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(20, 20, 40, 0.95));
     border: 1px solid var(--color-border);
     border-radius: 6px;
     padding: 0.5rem;
     color: var(--color-text);
     cursor: pointer;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.satisfactionInput:hover {
+    background: linear-gradient(135deg, rgba(40, 40, 60, 0.9), rgba(30, 30, 50, 0.95));
+    border-color: var(--color-primary);
+}
+
+.satisfactionInput:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1);
+}
+
+.satisfactionInput option {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 0.5rem;
+    font-weight: 500;
 }
 
 .cellInput {
@@ -341,6 +363,10 @@
     border-radius: 4px;
 }
 
+.mobileLabel {
+    display: none;
+}
+
 @media (max-width: 1024px) {
     .container {
         grid-template-columns: 1fr;
@@ -352,13 +378,35 @@
         max-height: 400px;
     }
 
-    .gridHeader,
+    .gridHeader {
+        display: none;
+    }
+
     .weekRow {
-        grid-template-columns: 100px 1fr;
-        /* Simplified mobile layout - consider valid alternatives or horizontal scroll */
-        /* For now let's keep it simple, maybe stack them? */
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .mobileLabel {
+        display: block;
+        color: var(--color-text-muted);
+        font-size: 0.85rem;
+        margin-bottom: -0.25rem;
+        margin-top: 0.5rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .weekInfo {
+        margin-bottom: 0.5rem;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 0.5rem;
     }
 }

@@ -359,6 +359,7 @@ export default function SkillsPage() {
                             <div className={styles.todayBox}>
                                 <span className={styles.todayDate}>{new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
                                 <span className={styles.todayDay}>Day {Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / (1000 * 60 * 60 * 24)) + 1}</span>
+                                <span className={styles.todayDay}>Week {Math.ceil((Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 1).getTime()) / (1000 * 60 * 60 * 24)) + 1) / 7)}</span>
                             </div>
                         </div>
 
@@ -380,12 +381,14 @@ export default function SkillsPage() {
                                             <span className={styles.dateRange}>{getDayRange(year, weekNum)}</span>
                                         </div>
 
+                                        <span className={styles.mobileLabel}>Planned Skill:</span>
                                         <DroppableWeekCell
                                             weekId={`week-${weekNum}`}
                                             value={plan?.skillName || ''}
                                             onChange={(val) => handlePlanUpdate(weekNum, 'skillName', val)}
                                         />
 
+                                        <span className={styles.mobileLabel}>Specific Target:</span>
                                         {/* Target Input */}
                                         <input
                                             type="text"
@@ -394,6 +397,7 @@ export default function SkillsPage() {
                                             onChange={(e) => handlePlanUpdate(weekNum, 'target', e.target.value)}
                                         />
 
+                                        <span className={styles.mobileLabel}>Satisfaction:</span>
                                         {/* Satisfaction Input */}
                                         <select
                                             className={styles.satisfactionInput}
@@ -411,6 +415,7 @@ export default function SkillsPage() {
                                             ))}
                                         </select>
 
+                                        <span className={styles.mobileLabel}>Notes:</span>
                                         {/* Notes Input */}
                                         <input
                                             type="text"
