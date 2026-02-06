@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './Header.module.css';
 import { useAuth } from '@/components/AuthProvider';
 import { useRouter } from 'next/navigation';
@@ -50,6 +51,10 @@ export default function Header() {
         label: 'Manage Features',
         onClick: () => setIsFeatModalOpen(true)
     });
+    dropdownItems.push({
+        label: 'Monthly Habit Tracker',
+        onClick: () => router.push('/monthly-tracker')
+    });
     dropdownItems.push('divider');
     dropdownItems.push({
         label: 'Sign Out',
@@ -81,7 +86,7 @@ export default function Header() {
             />
 
             <div className={styles.container}>
-                <div className={styles.logo}>
+                <Link href="/dashboard" className={styles.logo}>
                     <Image
                         src="/everform-logo.png"
                         alt="Everform Logo"
@@ -90,7 +95,7 @@ export default function Header() {
                         className={styles.logoImage}
                     />
                     <span className={styles.logoText}>Everform</span>
-                </div>
+                </Link>
 
                 {user && (
                     <div className={styles.userSection}>

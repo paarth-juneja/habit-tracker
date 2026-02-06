@@ -13,9 +13,10 @@ interface HabitCompletionGraphProps {
     habits: Habit[];
     year: number;
     month: number;
+    leftOffset?: number;
 }
 
-export default function HabitCompletionGraph({ habits, year, month }: HabitCompletionGraphProps) {
+export default function HabitCompletionGraph({ habits, year, month, leftOffset }: HabitCompletionGraphProps) {
     const [hoverData, setHoverData] = useState<{ x: number, y: number, day: number, percent: number, completed: number, total: number } | null>(null);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -38,7 +39,8 @@ export default function HabitCompletionGraph({ habits, year, month }: HabitCompl
     // Grid Dimensions (Must match HabitTracker.module.css)
     // Desktop: 8 + 28 + 244 = 280. 
     // Mobile: 8 + 28 + 44 + 160 = 240.
-    const LEFT_OFFSET = isMobile ? 240 : 280;
+    const defaultLeftOffset = isMobile ? 240 : 280;
+    const LEFT_OFFSET = leftOffset !== undefined ? leftOffset : defaultLeftOffset;
     const COL_WIDTH = isMobile ? 32 : 36;
 
     const RIGHT_PADDING = 60;

@@ -1,0 +1,203 @@
+.page {
+    min-height: 100vh;
+    background-color: var(--background);
+    color: var(--foreground);
+}
+
+.main {
+    padding-top: 80px;
+    /* Header height */
+    padding-bottom: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin: 0 auto;
+    /* Ensure centering */
+}
+
+.headerSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    width: 100%;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    /* Larger */
+    font-weight: 800;
+    /* Bolder */
+    color: var(--primary);
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* Slight pop */
+    font-family: var(--font-heading, sans-serif);
+    /* Use heading font if available */
+    letter-spacing: -0.02em;
+}
+
+.yearSelector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.yearButton {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.yearButton:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary-dim);
+}
+
+.currentYear {
+    font-size: 20px;
+    font-weight: 600;
+    min-width: 60px;
+    text-align: center;
+}
+
+.monthsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.monthCard {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.monthHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.monthTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--foreground);
+}
+
+.refreshButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: var(--primary-dim);
+    border: none;
+    border-radius: 8px;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.refreshButton:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.refreshButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.graphContainer {
+    width: 100%;
+    max-width: 100%;
+    /* Ensure it respects parent width */
+    min-width: 0;
+    /* Critical for flex items to shrink below content size */
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    /* key change: allow scroll from left */
+    justify-content: flex-start;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    overflow-x: auto;
+}
+
+.graphWrapper {
+    margin: 0 auto;
+    /* Centers if smaller, keeps left-aligned if wider (flex-item behavior) */
+    display: flex;
+    /* To shrink wrap content */
+}
+
+.emptyState {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.loadingState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    color: var(--primary);
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--primary-dim);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+    }
+
+    /* Header is already centered by default now, so we remove the specific align-items: flex-start override if it existed, 
+       or just let it inherit the centered styles. 
+       Actually, previous code had .headerSection { flex-direction: column; align-items: flex-start; } 
+       We want to remove that override. */
+
+    .graphContainer {
+        min-height: 180px;
+        padding: 12px;
+    }
+}
